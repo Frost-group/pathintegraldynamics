@@ -1,0 +1,42 @@
+reset
+set key
+show key
+set termoption enhanced
+set encoding iso_8859_1 
+set border lw 1
+
+#set key right bottom # below 
+set key font ",10"
+set tics font ", 30"
+#set key spacing 1
+set key samplen 2
+set key left top #left box 1 
+#set key width -1.8
+#set logscale x
+#set logscale y
+
+set origin 0, 0
+set xlabel "{/Helvetica-Italic t}"
+set ylabel "{/Helvetica-Italic Im{/Symbol r} 12}"
+
+
+set style line 1 lt 10 pt 13 ps 1.2 lc rgb "forest-green" lw 6
+set style line 2 lt 5 pt 7 ps 1.2 lc rgb "blue" lw 6
+set style line 3 lt 3 pt 9 ps 1.2 lc rgb "plum" lw 6
+set style line 4 lt 4 pt 15 ps 1.2 lc rgb "skyblue" lw 6
+set style line 6 lt 7 pt 7 ps 1.2 lc rgb "#6A5ACD" lw 6
+set style line 5 lt 1 pt 13 ps 1.2 lc rgb "#556B2A" lw 6
+set style line 7 lt 1 pt 13 ps 1.2 lc rgb "orange-red" lw 6
+set style line 8 lt 1 pt 13 ps 1.2 lc rgb "#000000" lw 6
+
+p 'b1/ImRDM.txt' u ($1):($4) w lp ls 3 t 'rmax=L=20 b=4'
+rep 'b2/ImRDM.txt' u ($1):($4) w lp ls 2 t 'rmax=20 L=50 b=3'
+rep 'b3/ImRDM.txt' u ($1):($4) w lp ls 4 t 'rmax=20 L=100 b=4'
+rep 'b4/ImRDM.txt' u ($1):($4) w lp ls 6 t 'rmax=L=50 b=3'
+rep 'quapi/ImRDM.txt' u ($1):($4) w lp ls 1 t 'QUAPI rmax=L=10'
+
+
+
+set terminal postscript enhanced "Helvetica,30" color
+set output "imrho12.eps"
+rep
