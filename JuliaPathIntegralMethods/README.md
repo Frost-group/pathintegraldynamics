@@ -12,4 +12,4 @@ Some interesting things to try :
 
 - [ ] Photosynthesis PS-2 systems. 
 
-
+- [ ] FMO complex from Bose JCP paper, try with other methods

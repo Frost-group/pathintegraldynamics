@@ -11,12 +11,16 @@ function spin_boson_a()
     ξ = 0.09
     ωc = 2.5
     
-    Jw = SpectralDensities.ExponentialCutoff(; ξ, ωc, n=1)
-    
     dt = 0.25
     ntimes = 100
     
     β = 0.1
+    
+    Jw = SpectralDensities.ExponentialCutoff(; ξ, ωc, n=1)
+    
+    ω, c = SpectralDensities.discretize(Jw, 100)
+    hb = Solvents.HarmonicBath(β, ω, c, [1.0, -1.0], 1000)
+
 
     barefbU = Propagators.calculate_bare_propagators(; Hamiltonian=H, dt=dt, ntimes=ntimes)
     
@@ -24,9 +28,12 @@ function spin_boson_a()
 
     t2, ρs2 = TEMPO.propagate(; fbU=barefbU, Jw=[Jw], β, ρ0, dt, ntimes, kmax=3)
 
+    t3, ρs3 = QCPI.propagate(; Hamiltonian=H, Jw, solvent=hb, ρ0, classical_dt = dt/100, dt, ntimes, kmax=3, extraargs=QuAPI.QuAPIArgs(), path_integral_routine=QuAPI.propagate)
+
     plot!(t, real.(ρs[:,1,1] - ρs[:,2,2]), label="QuAPI")
     plot!(t2, real.(ρs2[:,1,1] - ρs2[:,2,2]), label="TEMPO")
-    
+    plot!(t3, real.(ρs3[:,1,1] - ρs3[:,2,2]), label="QCPI")
+
     savefig("sb_a.png")
 
 end
@@ -43,17 +50,22 @@ function spin_boson_b()
     dt = 0.25
     ntimes = 100
     
-    β = 5
+    β = 5.0
 
+    ω, c = SpectralDensities.discretize(Jw, 100)
+    hb = Solvents.HarmonicBath(β, ω, c, [1.0, -1.0], 1000)
+    
     barefbU = Propagators.calculate_bare_propagators(; Hamiltonian=H, dt=dt, ntimes=ntimes)
     
     t, ρs = QuAPI.propagate(; fbU=barefbU, Jw=[Jw], β, ρ0, dt, ntimes, kmax=3)
 
     t2, ρs2 = TEMPO.propagate(; fbU=barefbU, Jw=[Jw], β, ρ0, dt, ntimes, kmax=3)
 
+    t3, ρs3 = QCPI.propagate(; Hamiltonian=H, Jw, solvent=hb, ρ0, classical_dt = dt/100, dt, ntimes, kmax=3, extraargs=QuAPI.QuAPIArgs(), path_integral_routine=QuAPI.propagate)
+    
     plot!(t, real.(ρs[:,1,1] - ρs[:,2,2]), label="QuAPI")
     plot!(t2, real.(ρs2[:,1,1] - ρs2[:,2,2]), label="TEMPO")
-    
+    plot!(t3, real.(ρs3[:,1,1] - ρs3[:,2,2]), label="QCPI")
     savefig("sb_b.png")
 
 end
@@ -73,14 +85,21 @@ function spin_boson_c()
     
     β = 0.25
 
+
+    ω, c = SpectralDensities.discretize(Jw, 100)
+    hb = Solvents.HarmonicBath(β, ω, c, [1.0, -1.0], 1000)
+
     barefbU = Propagators.calculate_bare_propagators(; Hamiltonian=H, dt=dt, ntimes=ntimes)
     
     t, ρs = QuAPI.propagate(; fbU=barefbU, Jw=[Jw], β, ρ0, dt, ntimes, kmax=3)
 
     t2, ρs2 = TEMPO.propagate(; fbU=barefbU, Jw=[Jw], β, ρ0, dt, ntimes, kmax=3)
 
+    t3, ρs3 = QCPI.propagate(; Hamiltonian=H, Jw, solvent=hb, ρ0, classical_dt = dt/100, dt, ntimes, kmax=3, extraargs=QuAPI.QuAPIArgs(), path_integral_routine=QuAPI.propagate)
+    
     plot!(t, real.(ρs[:,1,1] - ρs[:,2,2]), label="QuAPI")
     plot!(t2, real.(ρs2[:,1,1] - ρs2[:,2,2]), label="TEMPO")
+    plot!(t3, real.(ρs3[:,1,1] - ρs3[:,2,2]), label="QCPI")
     
     savefig("sb_c.png")
 
@@ -98,15 +117,21 @@ function spin_boson_d()
     dt = 0.25
     ntimes = 100
     
-    β = 5
+    β = 5.0
 
+    ω, c = SpectralDensities.discretize(Jw, 100)
+    hb = Solvents.HarmonicBath(β, ω, c, [1.0, -1.0], 1000)
+    
     barefbU = Propagators.calculate_bare_propagators(; Hamiltonian=H, dt=dt, ntimes=ntimes)
     
     t, ρs = QuAPI.propagate(; fbU=barefbU, Jw=[Jw], β, ρ0, dt, ntimes, kmax=3)
 
     t2, ρs2 = TEMPO.propagate(; fbU=barefbU, Jw=[Jw], β, ρ0, dt, ntimes, kmax=3)
 
+    t3, ρs3 = QCPI.propagate(; Hamiltonian=H, Jw, solvent=hb, ρ0, classical_dt = dt/100, dt, ntimes, kmax=3, extraargs=QuAPI.QuAPIArgs(), path_integral_routine=QuAPI.propagate)
+    
     plot!(t, real.(ρs[:,1,1] - ρs[:,2,2]), label="QuAPI")
+    plot!(t2, real.(ρs2[:,1,1] - ρs2[:,2,2]), label="TEMPO")
     plot!(t2, real.(ρs2[:,1,1] - ρs2[:,2,2]), label="TEMPO")
     
     savefig("sb_d.png")
