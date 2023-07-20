@@ -8,7 +8,7 @@ Some interesting things to try :
 
 - [ ] Reimplement a Tully model.
 
-- [ ] Compare QuAPI + TTM and BlipSum + TTM with QuAPI + SMatPI and BlipSum+ SMatPI for same system.
+- [ ] Compare QuAPI + TTM and BlipSum + TTM with QuAPI + SMatPI and BlipSum+ SMatPI for same system. (TTM too slow)
 
 - [ ] Photosynthesis PS-2 systems. 
 
