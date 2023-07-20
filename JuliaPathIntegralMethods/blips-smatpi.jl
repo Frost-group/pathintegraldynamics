@@ -16,7 +16,7 @@ function blips()
 
     fbU = Propagators.calculate_bare_propagators(; Hamiltonian=H0, dt=dt, ntimes=ntimes)
 
-    t, ρs = Blip.build_augmented_propagator(; fbU=fbU, Jw=[Jw], β=β, ρ0=ρ0, dt=dt, ntimes=ntimes, kmax=3)
+    t, ρs = Blip.build_augmented_propagator(; fbU=fbU, Jw=[Jw], β=β, dt=dt, ntimes=ntimes, svec=[0.0 2.0])
 
     f = open("blips-smatpi-pathsum.txt")
     lines = readlines(f)
