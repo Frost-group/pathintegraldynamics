@@ -8,6 +8,10 @@ Some interesting things to try :
 
 - [ ] Reimplement a Tully model.
 
+- [x] Compare QuAPI with SMatPI + QuAPI from PathSum (Matches most when kmax = 1 in QuantumDynamics ; Is PathSum SMatPI + QuAPI non-Markovian??)
+
+- [ ] Compare BlipSum with SMatPI + BlipSum from PathSum
+
 - [ ] Compare QuAPI + TTM and BlipSum + TTM with QuAPI + SMatPI and BlipSum+ SMatPI for same system. (TTM too slow)
 
 - [ ] Photosynthesis PS-2 systems. 
