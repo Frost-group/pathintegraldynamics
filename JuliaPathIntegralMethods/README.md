@@ -10,7 +10,7 @@ Some interesting things to try :
 
 - [x] Compare QuAPI with SMatPI + QuAPI from PathSum (Matches most when kmax = 1 in QuantumDynamics ; Is PathSum SMatPI + QuAPI non-Markovian??)
 
-- [ ] Compare BlipSum with SMatPI + BlipSum from PathSum (Blips slow)
+- [ ] Compare QuantumDynamics BlipSum and SMatPI + BlipSum from PathSum (Blips slow)
 
 - [ ] Compare QuAPI + TTM and BlipSum + TTM with QuAPI + SMatPI and BlipSum+ SMatPI for same system. (TTM too slow)
 
