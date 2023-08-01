@@ -73,24 +73,32 @@ function FMO_QuAPI()
     λs = repeat([35.0], 7) * invcm2au
     γs = 1 ./ (repeat([50.0], 7) ./ au2fs)
     Jw = Vector{SpectralDensities.DrudeLorentz}()
-    sys_ops = Vector{Matrix{ComplexF64}}()
+    #sys_ops = Vector{Matrix{ComplexF64}}()
     for (j, (λ, γ)) in enumerate(zip(λs, γs))
         push!(Jw, SpectralDensities.DrudeLorentz(; λ, γ, Δs=1.0))
-        op = zeros(7, 7)
-        op[j, j] = 1.0
-        push!(sys_ops, op)
+        #op = zeros(7, 7)
+        #op[j, j] = 1.0
+        #push!(sys_ops, op)
     end
-    
+
     threshold=1e-5
+
+    #Jw = SpectralDensities.ExponentialCutoff(; ξ=0.16, ωc=7.5)
     
-    fbU = Propagators.calculate_bare_propagators(; Hamiltonian=H, dt=dt, ntimes=nsteps)
     
-    @time t, ρs = QuAPI.propagate(; fbU=fbU, Jw=Jw, β=β, ρ0=ρ0, dt=dt, ntimes=nsteps, kmax=1, svec=[0.0, 1.0])
+    barefbU = Propagators.calculate_bare_propagators(; Hamiltonian=H, dt=dt, ntimes=nsteps)
+
+    svec = [1.0 -1.0 ; 1.0 -1.0; 1.0 -1.0; 1.0 -1.0 ; 1.0 -1.0 ; 1.0 -1.0; 1.0 -1.0]
+    
+    @time times, ρ = TTM.propagate(; fbU=barefbU, ρ0=ρ0, Jw=Jw, β, ntimes=nsteps, dt, svec, rmax=1, extraargs=QuAPI.QuAPIArgs(), path_integral_routine=QuAPI.build_augmented_propagator)
+    
+
+    #@time t, ρs = QuAPI.propagate(; fbU=fbU, Jw=[Jw], β=β, ρ0=ρ0, dt=dt, ntimes=nsteps, kmax=1)
 
     for j = 1:7
-        plot!(t, real.(ρ[:, j, j]), label="Site $(j)", xlabel="t", ylabel="P(t)")
+        plot!(times, real.(ρ[:, j, j]), label="Site $(j)", xlabel="t", ylabel="P(t)")
     end
-    savefig("heom_quapi.png")
+    savefig("fmo_quapi_ttm.png")
 
 end
 
