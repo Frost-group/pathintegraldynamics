@@ -47,8 +47,7 @@ function FMO_HEOM(num_modes, Lmax, scaled=true)
 end
 
 
-function FMO_QuAPI()
-    
+function FMO_QuAPI() 
     thz2au = 0.0001519828500716
     invcm2au = 4.55633e-6
     au2fs = 0.02418884254
@@ -91,9 +90,6 @@ function FMO_QuAPI()
     svec = [1.0 -1.0 ; 1.0 -1.0; 1.0 -1.0; 1.0 -1.0 ; 1.0 -1.0 ; 1.0 -1.0; 1.0 -1.0]
     
     @time times, ρ = TTM.propagate(; fbU=barefbU, ρ0=ρ0, Jw=Jw, β, ntimes=nsteps, dt, svec, rmax=1, extraargs=QuAPI.QuAPIArgs(), path_integral_routine=QuAPI.build_augmented_propagator)
-    
-
-    #@time t, ρs = QuAPI.propagate(; fbU=fbU, Jw=[Jw], β=β, ρ0=ρ0, dt=dt, ntimes=nsteps, kmax=1)
 
     for j = 1:7
         plot!(times, real.(ρ[:, j, j]), label="Site $(j)", xlabel="t", ylabel="P(t)")
