@@ -12,9 +12,7 @@ Some interesting things to try :
 
 - [ ] Compare QuantumDynamics BlipSum and SMatPI + BlipSum from PathSum (Blips slow)
 
-- [ ] Compare QuAPI + TTM and BlipSum + TTM with QuAPI + SMatPI and BlipSum+ SMatPI for same system. (Codes aren't fast enough)
-
-- [ ] Photosynthesis systems (LH2 or BChI or something) model hamiltonian + run method.
+- [x] Compare QuAPI + TTM and BlipSum + TTM with QuAPI + SMatPI and BlipSum+ SMatPI for same system.
 
 - [x] FMO complex from Bose JCP paper
 
@@ -22,4 +20,3 @@ Some interesting things to try :
 
 - [ ] FMO in NQCDynamics
 
-- [ ] Model for polaron.
