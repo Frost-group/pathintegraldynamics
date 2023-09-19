@@ -1,6 +1,6 @@
-# pathintegraldynamics
+# PathIntegralDynamics
 
-Testing various Non-Adiabatic Dynamics Path Integral methods for model Hamiltonians, and real systems.
+Applying Non-Adiabatic Dynamics Path Integral methods for model Hamiltonians and real systems.
 
 # Beyond model Hamiltonians
 
