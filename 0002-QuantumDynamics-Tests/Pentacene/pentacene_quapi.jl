@@ -21,7 +21,7 @@ function pentacene_quapi()
     Jw = SpectralDensities.DrudeLorentz(; λ=100.0*invcm2au, γ=1/(50.0 / au2fs), Δs=1.0)
     
     fbU = Propagators.calculate_bare_propagators(; Hamiltonian=H0, dt=dt, ntimes=nsteps)
-    #t, ρ = QuAPI.propagate(; fbU=fbU, Jw=[Jw], β=β, ρ0=ρ0, dt=dt, ntimes=nsteps, kmax=1)
+    
     t, ρ = TTM.propagate(; fbU=fbU, Jw=[Jw], β=β, ρ0=ρ0, dt=dt, ntimes=nsteps, rmax=1, extraargs=QuAPI.QuAPIArgs(), path_integral_routine=QuAPI.build_augmented_propagator)
     plot!(t.*au2fs, real.(ρ[:, 1,1]))
     savefig("pentacene_quapi.png")
