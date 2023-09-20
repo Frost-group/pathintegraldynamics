@@ -29,8 +29,8 @@ function rubrene_cell()
    
     # Dynamics params
 
-    nsteps = 5000
-    dt = 1000 / au2fs / nsteps
+    nsteps = 10000
+    dt = 0.25 / au2fs
     ρ0 = Matrix{ComplexF64}(zeros(4, 4))
     ρ0[1, 1] = 1
 
