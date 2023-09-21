@@ -10,29 +10,51 @@ const au2fs = 0.02418884254
 const mev2invcm = 8.066
 
 
-function rubrene_cell()
+function rubrene_1D()
     
     
     # Parameters from Ordejon (2017)
     
-    ϵab = 4.1
-    ϵac = 28.9
-    ϵad = 0.0
+    ϵb = 134.0
+    ϵ2b = -10.7
     
-    # Hamiltonian pieced together assuming interactions work the same at different unit cell sites.
+    # Hamiltonian with interactions with nearest 2 neighbours.   
+    
+    N = 10
+    
+    H0 = Matrix{ComplexF64}(zeros(N, N))
 
-    H0 = Matrix{ComplexF64}([   
-            0.0 ϵab ϵac ϵad
-            ϵab 0.0 ϵad ϵac
+    for i in 1:N
+        if i <= N-2
+            H0[i, i+2] = ϵ2b
+        end
+        if i <= N-1
+            H0[i, i+1] = ϵb
+        end
+        if i >= 2
+            H0[i, i-1] = ϵb
+        end
+        if i>=3
+            H0[i, i-2] = ϵ2b
+        end
+    end
+
+    print(H0)
+
+    H0 = H0 * mev2invcm * invcm2au
+
+    #=H0 = Matrix{ComplexF64}([   
+            0.0 ϵb ϵ2b 0.0 0.0
+            ϵab 0.0 ϵb ϵ2b 0.0
             ϵac ϵad 0.0 ϵab
             ϵad ϵac ϵab 0.0]) * mev2invcm * invcm2au
-   
+    =#
     # Dynamics params
 
     nsteps = 10000
     dt = 0.25 / au2fs
-    ρ0 = Matrix{ComplexF64}(zeros(4, 4))
-    ρ0[1, 1] = 1
+    ρ0 = Matrix{ComplexF64}(zeros(N, N))
+    ρ0[5, 5] = 1
 
     β = 1 / (300 * 3.16683e-6) # T = 300K
 
@@ -48,14 +70,14 @@ function rubrene_cell()
  
     t_q, ρ_q = QCPI.propagate(; Hamiltonian=H0, Jw, solvent=hb, ρ0, classical_dt=dt / 100, dt, ntimes=nsteps, kmax=5, extraargs=QuAPI.QuAPIArgs(), path_integral_routine=QuAPI.propagate)
     =#
-    plot!(t.*au2fs, real.(ρ[:, 1,1]), label="TTM")
+    plot!(t.*au2fs, real.(ρ[:,5,5]), label="TTM")
     
 
     #plot!(t_q.*au2fs, real.(ρ_q[:, 1,1]), label="QCPI")
 
-    savefig("rubrene_unit_cell.png") 
+    savefig("rubrene_1D.png") 
     
 end
 
 
-rubrene_cell()
+rubrene_1D()
