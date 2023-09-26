@@ -46,7 +46,7 @@ function rubrene_1D()
     ϵ2b = -10.7
     
     # Hamiltonian with interactions with nearest 2 neighbours.   
-    N = 10
+    N = 20
     
     H0 = Matrix{ComplexF64}(zeros(N, N))
 
@@ -83,11 +83,11 @@ function rubrene_1D()
     g0p = ωpg0p ./ ωp
     jws = ((g0p.^(2)) ./ ωp).*(π/2)
     
-    # Jw = SpectralDensities.ExponentialCutoff(; ξ=300000.0, ωc=57.8*invcm2au, n=0.0, Δs=1.0)
+    Jw = SpectralDensities.ExponentialCutoff(; ξ=300000.0, ωc=57.8*invcm2au, n=0.0, Δs=1.0)
     
-    ωmax = maximum(ωp)
+    #ωmax = maximum(ωp)
 
-    Jw = fitsd(ωp, jws, ωmax, 1.0, false)
+    #Jw = fitsd(ωp, jws, ωmax, 1.0, false)
     
     #=   
     ω = 0:0.00001:0.007
