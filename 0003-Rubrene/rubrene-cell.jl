@@ -35,25 +35,26 @@ function rubrene_cell()
     ρ0[1, 1] = 1
 
     β = 1 / (300 * 3.16683e-6) # T = 300K
+    Jw = SpectralDensities.ExponentialCutoff(; ξ=300000.0, ωc=57.8*invcm2au, n=0.0, Δs=1.0)
 
-    Jw = SpectralDensities.DrudeLorentz(; λ=100.0*invcm2au, γ=50*invcm2au, Δs=1.0)   # Arbitrarily going with spectral density from Pentacene paper, will have to find params.
-    
+
     fbU = Propagators.calculate_bare_propagators(; Hamiltonian=H0, dt=dt, ntimes=nsteps)
     
     t, ρ = TTM.propagate(; fbU=fbU, Jw=[Jw], β=β, ρ0=ρ0, dt=dt, ntimes=nsteps, rmax=1, extraargs=QuAPI.QuAPIArgs(), path_integral_routine=QuAPI.build_augmented_propagator)
-    #= 
-    num_points=20
-    ω, c = SpectralDensities.discretize(Jw, 100)
-    hb = Solvents.HarmonicBath(β, ω, c, [-2.0, -1.0, 0.0, 1.0], num_points)
- 
-    t_q, ρ_q = QCPI.propagate(; Hamiltonian=H0, Jw, solvent=hb, ρ0, classical_dt=dt / 100, dt, ntimes=nsteps, kmax=5, extraargs=QuAPI.QuAPIArgs(), path_integral_routine=QuAPI.propagate)
-    =#
-    plot!(t.*au2fs, real.(ρ[:, 1,1]), label="TTM")
     
+    # Mobility Calculation based on DOI 10.1039/C9CP04770K 
+    MSD = []
+    for i in t
+        s = 0.0
+        for j in 1:4
+            s += ρ[:, j, j]*((j - 5)^2)  
+        end
+        push!(MSD, s)
+    end
 
-    #plot!(t_q.*au2fs, real.(ρ_q[:, 1,1]), label="QCPI")
-
-    savefig("rubrene_unit_cell.png") 
+    plot!(t, MSD)
+    
+    savefig("rubrene_unit_cell_mobility.png") 
     
 end
 
