@@ -69,7 +69,7 @@ function rubrene_1D()
     #print(H0)
     H0 = H0 * mev2invcm * invcm2au
 
-    nsteps = 10000
+    nsteps = 1000
     dt = 0.25 / au2fs
     ρ0 = Matrix{ComplexF64}(zeros(N, N))
     ρ0[5, 5] = 1
@@ -83,11 +83,11 @@ function rubrene_1D()
     g0p = ωpg0p ./ ωp
     jws = ((g0p.^(2)) ./ ωp).*(π/2)
     
-    # Jw = SpectralDensities.ExponentialCutoff(; ξ=300000.0, ωc=57.8*invcm2au, n=0.0, Δs=1.0)
+    Jw = SpectralDensities.ExponentialCutoff(; ξ=300000.0, ωc=57.8*invcm2au, n=0.0, Δs=1.0)
     
     ωmax = maximum(ωp)
 
-    Jw = fitsd(ωp, jws, ωmax, 1.0, false)
+    #Jw = fitsd(ωp, jws, ωmax, 1.0, false)
     
     #=   
     ω = 0:0.00001:0.007
@@ -98,9 +98,29 @@ function rubrene_1D()
     
     fbU = Propagators.calculate_bare_propagators(; Hamiltonian=H0, dt=dt, ntimes=nsteps)    
     t, ρ = TTM.propagate(; fbU=fbU, Jw=[Jw], β=β, ρ0=ρ0, dt=dt, ntimes=nsteps, rmax=1, extraargs=QuAPI.QuAPIArgs(), path_integral_routine=QuAPI.build_augmented_propagator)
-    plot!(t.*au2fs, real.(ρ[:,5,5]), label="TTM")
     
-    savefig("rubrene_1D.png") 
+    MSD = []
+    for i in 1:nsteps
+        s = 0.0
+        for j in 1:N
+            s += real(ρ[i, j, j])*((j-5)^2)
+        end
+        push!(MSD, s)
+    end
+    
+    μ = β * (MSD[999] - MSD[1])/(t[999] - t[1])
+    
+    println(t)
+    println(MSD)
+    println(μ)
+
+    plot!(t.*au2fs, real.(ρ[:,5,5]), label="P5")
+    plot!(t.*au2fs, real.(ρ[:,4,4]), label="P4")
+    plot!(t.*au2fs, real.(ρ[:,3,3]), label="P3")
+    plot!(t.*au2fs, real.(ρ[:,2,2]), label="P2")
+    plot!(t.*au2fs, real.(ρ[:,1,1]), label="P1")
+    
+    savefig("rubrene_sites.png") 
     
 end
 
