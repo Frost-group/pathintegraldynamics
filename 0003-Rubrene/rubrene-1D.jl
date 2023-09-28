@@ -46,7 +46,7 @@ function rubrene_1D()
     ϵ2b = -10.7
     
     # Hamiltonian with interactions with nearest 2 neighbours.   
-    N = 10
+    N = 5
     
     H0 = Matrix{ComplexF64}(zeros(N, N))
 
@@ -83,11 +83,11 @@ function rubrene_1D()
     g0p = ωpg0p ./ ωp
     jws = ((g0p.^(2)) ./ ωp).*(π/2)
     
-    #Jw = SpectralDensities.ExponentialCutoff(; ξ=30.0, ωc=57.8*invcm2au, n=0.0, Δs=1.0)
+    Jw = SpectralDensities.ExponentialCutoff(; ξ=30.0, ωc=57.8*invcm2au, n=0.0, Δs=1.0)
     
     ωmax = maximum(ωp)
 
-    Jw = fitsd(ωp, jws, ωmax, 1.0, false)
+    #Jw = fitsd(ωp, jws, ωmax, 1.0, false)
     
     #=   
     ω = 0:0.00001:0.007
@@ -108,19 +108,22 @@ function rubrene_1D()
         push!(MSD, s)
     end
     
-    μ = β * (MSD[2] - MSD[1])/(t[2] - t[1])
+    μ = β * (MSD[20] - MSD[1])/(t[20] - t[1])
     
-    println(t)
-    println(MSD)
-    println(μ)
+    t1 = t[1:nsteps]
+    
+    plot!(t1, MSD, title="mobility = $μ")
 
+    #=
     plot!(t.*au2fs, real.(ρ[:,5,5]), label="P5")
     plot!(t.*au2fs, real.(ρ[:,4,4]), label="P4")
     plot!(t.*au2fs, real.(ρ[:,3,3]), label="P3")
     plot!(t.*au2fs, real.(ρ[:,2,2]), label="P2")
     plot!(t.*au2fs, real.(ρ[:,1,1]), label="P1", title="mobility = $μ")
-    
-    savefig("rubrene_sites.png") 
+    =#
+
+
+    savefig("MSD.png") 
     
 end
 
