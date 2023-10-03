@@ -18,13 +18,29 @@ function pentacene_quapi()
     ρ0 = [1.0+0.0im 0; 0 0]
     β = 1 / (300 * 3.16683e-6)
 
-    Jw = SpectralDensities.DrudeLorentz(; λ=100.0*invcm2au, γ=1/(50.0 / au2fs), Δs=1.0)
+    Jw = SpectralDensities.DrudeLorentz(; λ=100.0*invcm2au, γ=50.0*invcm2au, Δs=1.0)
     
+    
+
     fbU = Propagators.calculate_bare_propagators(; Hamiltonian=H0, dt=dt, ntimes=nsteps)
     
     t, ρ = TTM.propagate(; fbU=fbU, Jw=[Jw], β=β, ρ0=ρ0, dt=dt, ntimes=nsteps, rmax=1, extraargs=QuAPI.QuAPIArgs(), path_integral_routine=QuAPI.build_augmented_propagator)
-    plot!(t.*au2fs, real.(ρ[:, 1,1]))
-    savefig("pentacene_quapi.png")
+    
+    for j in 1:N
+        #push!(JwD, SpectralDensities.DrudeLorentz(; λ, γ, Δs=1.0))
+        op = zeros(N, N)
+        op[j, j] = 1.0
+        push!(sys_ops, op)
+    end
+    
+
+    @time th, ρh = HEOM.propagate(; Hamiltonian=H0, ρ0=ρ0, Jw=[Jw], β, ntimes=nsteps, dt, sys_ops, num_modes, Lmax, scaled, threshold, extraargs=Utilities.DiffEqArgs(; reltol=1e-6, abstol=1e-6))
+    th .*= au2fs
+    
+
+    plot!(t.*au2fs, real.(ρ[:, 1,1]), label="TTM")
+    plot!(th, real.(ρ[:, 1,1]), label="HEOM")
+    savefig("pentacene_quapi_HEOM.png")
 end
 
 pentacene_quapi()
