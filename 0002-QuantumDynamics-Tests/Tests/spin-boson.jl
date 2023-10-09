@@ -24,14 +24,14 @@ function spin_boson_a()
 
     barefbU = Propagators.calculate_bare_propagators(; Hamiltonian=H, dt=dt, ntimes=ntimes)
     
-    t, ρs = QuAPI.propagate(; fbU=barefbU, Jw=[Jw], β, ρ0, dt, ntimes, kmax=3)
+#    t, ρs = QuAPI.propagate(; fbU=barefbU, Jw=[Jw], β, ρ0, dt, ntimes, kmax=3)
 
-    t2, ρs2 = TEMPO.propagate(; fbU=barefbU, Jw=[Jw], β, ρ0, dt, ntimes, kmax=3)
+ #   t2, ρs2 = TEMPO.propagate(; fbU=barefbU, Jw=[Jw], β, ρ0, dt, ntimes, kmax=3)
 
     t3, ρs3 = QCPI.propagate(; Hamiltonian=H, Jw, solvent=hb, ρ0, classical_dt = dt/100, dt, ntimes, kmax=3, extraargs=QuAPI.QuAPIArgs(), path_integral_routine=QuAPI.propagate)
 
-    plot!(t, real.(ρs[:,1,1] - ρs[:,2,2]), label="QuAPI")
-    plot!(t2, real.(ρs2[:,1,1] - ρs2[:,2,2]), label="TEMPO")
+  #  plot!(t, real.(ρs[:,1,1] - ρs[:,2,2]), label="QuAPI")
+   # plot!(t2, real.(ρs2[:,1,1] - ρs2[:,2,2]), label="TEMPO")
     plot!(t3, real.(ρs3[:,1,1] - ρs3[:,2,2]), label="QCPI")
 
     savefig("sb_a.png")
@@ -138,7 +138,7 @@ function spin_boson_d()
 
 end
 
-#spin_boson_a()
+spin_boson_a()
 #spin_boson_b()
 #spin_boson_c()
-spin_boson_d()
+#spin_boson_d()
