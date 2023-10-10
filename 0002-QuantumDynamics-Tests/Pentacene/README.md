@@ -9,4 +9,10 @@ Notes :
 
 * The damping nature appears to be similar but the jagged bits of the curve aren't obtained and it appears to be a very smooth damped oscillator. 
 
+Updated Notes (10 Oct) :
+
+* Better results with QCPI on longer time-step.
+
+* Doesn't converge as well and starts to explode after allowing it to propagate for a while.
+
 
