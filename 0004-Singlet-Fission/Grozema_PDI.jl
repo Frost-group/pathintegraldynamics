@@ -26,7 +26,7 @@ function pdi()
     tll =  145.0  / 1000
     thl = -125.0  / 1000
 
-    N = 5
+    N = 5 # Number of states / dimension of Hamiltonian
 
     H0 = Matrix{ComplexF64}([
         Es 0 tll -thh t2e
@@ -40,14 +40,14 @@ function pdi()
     Jw = SpectralDensities.DrudeLorentz(λ=135E-3*eV2Ha, γ=150E-3*eV2Ha, Δs=1.0)
     println("Jw = ", Jw)
 
-    nsteps = 2000
     ρ0 = Matrix{ComplexF64}(zeros(N, N))
-    ρ0[1, 1] = 1.0
+    ρ0[1, 1] = 1.0 # Prepare initial population
 
     #T = 50.0:50.0:500.0
 
     β = 1 / (300 * 3.16683e-6) # JMF what units?
 
+    nsteps = 2000
     dt = 0.05/au2fs
 
     d = 1 # JMF: what this?
