@@ -46,7 +46,7 @@ function SFtrimerHEOM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cu
     ]) * mev2au
 
     ρ0 = Matrix{ComplexF64}(zeros(N, N))
-    ρ0[1, 1] = 1.0
+    ρ0[3, 3] = 1.0
     β = 1 / (300 * 3.16683e-6) # T = 300K
     svec = Matrix{Float64}(zeros(1, N))
     for i in 1:N
@@ -118,7 +118,7 @@ function SFtrimerTTM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cut
     ]) * mev2au
 
     ρ0 = Matrix{ComplexF64}(zeros(N, N))
-    ρ0[1, 1] = 1.0
+    ρ0[3, 3] = 1.0
     β = 1 / (300 * 3.16683e-6) # T = 300K
     svec = Matrix{Float64}(zeros(1, N))
     for i in 1:N

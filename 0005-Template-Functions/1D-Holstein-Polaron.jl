@@ -42,11 +42,9 @@ function HolsteinPolaron1D(N, v, reorg, cutoff; dt=0.25/au2fs, nsteps=400000, L=
         end
     end
 
-    nsteps = 40000
     ρ0 = Matrix{ComplexF64}(zeros(N, N))
     ρ0[1, 1] = 1.0
     β = 1 / (300 * 3.16683e-6) # T = 300K
-    dt = 0.25/au2fs
     svec = Matrix{Float64}(zeros(1, N))
     for i in 1:N
         svec[i] = i
@@ -76,7 +74,7 @@ function HolsteinPolaron1D(N, v, reorg, cutoff; dt=0.25/au2fs, nsteps=400000, L=
                                     Lmax=L)
 
     for i in 1:N
-        plot!(times_HEOM.*au2fs, real.(ρs[:, i, i]), label="site $i", xscale=:log10)
+        plot!(times_HEOM.*au2fs, real.(ρs[:, i, i]), label="site $i")
     end
 
     savefig("rubrene-HEOM-populations $L.png")
@@ -101,10 +99,88 @@ function HolsteinPolaron1D(N, v, reorg, cutoff; dt=0.25/au2fs, nsteps=400000, L=
 end
 
 
+"""
+HolsteinPolaron1DTTM
+
+Sets up and runs TTM calculation on 1D Holstein-Peierls chain. Output - plot of populations of all sites, MSD vs time, dMSD/dt vs time and mobility
+
+N - number of sites
+v - nearest-neighbours coupling
+reorg - reorganization energy
+cutoff - cutoff frequency
+dt - timestep
+nsteps - number of propagation steps
+rmax - Memory length
+
+
+"""
+
+function HolsteinPolaron1DTTM(N, v, reorg, cutoff; dt=0.25/au2fs, nsteps=400000, rmax=10)
+    H0 = Matrix{ComplexF64}(zeros(N, N))
+    for i in 1:N
+        H0[i,i] = 0.0
+        if i <= N-1
+            H0[i, i+1] = v
+        end
+        if i >= 2
+            H0[i, i-1] = v
+        end
+    end
+
+    ρ0 = Matrix{ComplexF64}(zeros(N, N))
+    ρ0[1, 1] = 1.0
+    β = 1 / (300 * 3.16683e-6) # T = 300K
+    svec = Matrix{Float64}(zeros(1, N))
+    for i in 1:N
+        svec[i] = i
+    end
+    
+    Jw = SpectralDensities.DrudeLorentz(λ=reorg, γ=cutoff, Δs=1.0)
+
+    fbU = Propagators.calculate_bare_propagators(; Hamiltonian=H0, dt=dt, ntimes=nsteps)
+
+    ts, ρs = TTM.propagate(; fbU=fbU,
+                            Jw=[Jw],
+                            β=β,
+                            ρ0=ρ0,
+                            dt=dt,
+                            ntimes=nsteps,
+                            rmax=rmax,
+                            svec=svec,
+                            extraargs=TEMPO.TEMPOArgs(),
+                            path_integral_routine=TEMPO.build_augmented_propagator)
+    
+    
+    for i in 1:N
+        plot!(ts.*au2fs, real.(ρs[:, i, i]), label="site $i")
+    end
+
+    savefig("rubrene-TTM-populations $rmax.png")
+
+    MSD = []
+    for i in 1:nsteps
+        s = 0.0
+        for j in 1:N
+            s += real(ρs[i, j, j])*(j)^2
+        end
+        push!(MSD, s)
+    end
+ 
+
+    plot((ts[2:nsteps]).*au2fs, MSD[2:nsteps], xscale=:log10)
+    
+    savefig("rubrene-TTM-MSD $L.png")
+
+    dMSD_dt = [(MSD[i] - MSD[i-1])/(dt*au2fs) for i in 2:nsteps]
+    plot((times_HEOM[2:nsteps]).*au2fs, dMSD_dt, xscale=:log10)
+    
+    savefig("rubrene-TTM-dMSD_dt $L.png")
+
 #for i in 3:7
 #	HolsteinPolaron1D(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; L=i, K=2)
 #end
 
-#HolsteinPolaron1D(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; L=26, K=2)
+HolsteinPolaron1D(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; L=3, K=2)
+HolsteinPolaron1DTTM(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; rmax=7)
 
 
