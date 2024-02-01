@@ -76,9 +76,9 @@ function SFtrimerHEOM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cu
                                     num_modes=K,
                                     Lmax=L)
     
-    plot(times_HEOM.*au2fs, (ρs[:, 1, 1] + ρs[:, 2, 2]), title="HEOM", label="TT")
-    plot!(times_HEOM.*au2fs, (ρs[:, 3, 3] + ρs[:, 4, 4] + ρs[:, 5, 5]), title="HEOM", label="XT")
-    plot!(times_HEOM.*au2fs, (ρs[:, 6, 6] + ρs[:, 7, 7] + ρs[:, 8, 8] + ρs[:, 9, 9]), title="HEOM", label="CT")
+    plot(times_HEOM.*au2fs, (real.(ρs[:, 1, 1]) + real.(ρs[:, 2, 2])), title="HEOM", label="TT")
+    plot!(times_HEOM.*au2fs, (real.(ρs[:, 3, 3]) + real.(ρs[:, 4, 4]) + real.(ρs[:, 5, 5])), title="HEOM", label="XT")
+    plot!(times_HEOM.*au2fs, (real.(ρs[:, 6, 6]) + real.(ρs[:, 7, 7]) + real.(ρs[:, 8, 8]) + real.(ρs[:, 9, 9])), title="HEOM", label="CT")
 
 
     
@@ -141,9 +141,9 @@ function SFtrimerTTM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cut
                             path_integral_routine=TEMPO.build_augmented_propagator)
     
 
-    plot(ts.*au2fs, (ρs[:, 1, 1] + ρs[:, 2, 2]), title="TTM", label="TT")
-    plot!(ts.*au2fs, (ρs[:, 3, 3] + ρs[:, 4, 4] + ρs[:, 5, 5]), title="TTM", label="XT")
-    plot!(ts.*au2fs, (ρs[:, 6, 6] + ρs[:, 7, 7] + ρs[:, 8, 8] + ρs[:, 9, 9]), title="TTM", label="CT")
+    plot(ts.*au2fs, (real.(ρs[:, 1, 1]) + real.(ρs[:, 2, 2])), title="TTM", label="TT")
+    plot!(ts.*au2fs, (real.(ρs[:, 3, 3]) + real.(ρs[:, 4, 4]) + real.(ρs[:, 5, 5])), title="TTM", label="XT")
+    plot!(ts.*au2fs, (real.(ρs[:, 6, 6]) + real.(ρs[:, 7, 7]) + real.(ρs[:, 8, 8]) + real.(ρs[:, 9, 9])), title="TTM", label="CT")
 
 
     
@@ -153,4 +153,4 @@ end
 
 #SFtrimerHEOM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
 
-SFtrimerTTM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
+#SFtrimerTTM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
