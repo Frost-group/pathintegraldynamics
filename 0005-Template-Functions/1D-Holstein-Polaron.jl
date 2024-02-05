@@ -169,18 +169,18 @@ function HolsteinPolaron1DTTM(N, v, reorg, cutoff; dt=0.25/au2fs, nsteps=400000,
 
     plot((ts[2:nsteps]).*au2fs, MSD[2:nsteps], xscale=:log10)
     
-    savefig("rubrene-TTM-MSD $L.png")
+    savefig("rubrene-TTM-MSD $rmax.png")
 
     dMSD_dt = [(MSD[i] - MSD[i-1])/(dt*au2fs) for i in 2:nsteps]
     plot((times_HEOM[2:nsteps]).*au2fs, dMSD_dt, xscale=:log10)
     
-    savefig("rubrene-TTM-dMSD_dt $L.png")
+    savefig("rubrene-TTM-dMSD_dt $rmax.png")
 end
 #for i in 3:7
 #	HolsteinPolaron1D(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; L=i, K=2)
 #end
 
-HolsteinPolaron1D(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; L=3, K=2)
-HolsteinPolaron1DTTM(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; rmax=7)
+#HolsteinPolaron1D(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; L=3, K=2)
+HolsteinPolaron1DTTM(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; rmax=10)
 
 

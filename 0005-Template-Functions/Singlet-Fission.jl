@@ -29,7 +29,7 @@ K - number of Matsubara modes
 
 """
 
-function SFtrimerHEOM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cutoff; dt=0.25/au2fs, nsteps=4000, L=5, K=2)
+function SFtrimerHEOM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cutoff; dt=0.25/au2fs, nsteps=4000, L=3, K=2)
 
     N = 9
 
@@ -46,7 +46,7 @@ function SFtrimerHEOM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cu
     ]) * mev2au
 
     ρ0 = Matrix{ComplexF64}(zeros(N, N))
-    ρ0[3, 3] = 1.0
+    ρ0[4, 4] = 1.0
     β = 1 / (300 * 3.16683e-6) # T = 300K
     svec = Matrix{Float64}(zeros(1, N))
     for i in 1:N
@@ -118,7 +118,7 @@ function SFtrimerTTM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cut
     ]) * mev2au
 
     ρ0 = Matrix{ComplexF64}(zeros(N, N))
-    ρ0[3, 3] = 1.0
+    ρ0[4, 4] = 1.0
     β = 1 / (300 * 3.16683e-6) # T = 300K
     svec = Matrix{Float64}(zeros(1, N))
     for i in 1:N
@@ -168,7 +168,7 @@ K - number of Matsubara modes
 
 """
 
-function SFdimerHEOM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cutoff; dt=0.25/au2fs, nsteps=4000, L=5, K=2)
+function SFdimerHEOM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cutoff; dt=0.25/au2fs, nsteps=4000, L=3, K=2)
 
     N = 5
 
@@ -212,8 +212,8 @@ function SFdimerHEOM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cut
                                     Lmax=L)
     
     plot(times_HEOM.*au2fs, (real.(ρs[:, 1, 1])), title="HEOM", label="TT")
-    plot!(times_HEOM.*au2fs, (real.(ρs[:, 2, 2]) + real.(ρs[:, 3, 3]) + real.(ρs[:, 5, 5])), title="HEOM", label="XT")
-    plot!(times_HEOM.*au2fs, (real.(ρs[:, 4, 4]) + real.(ρs[:, 5, 5]) + real.(ρs[:, 8, 8]) + real.(ρs[:, 9, 9])), title="HEOM", label="CT")
+    plot!(times_HEOM.*au2fs, (real.(ρs[:, 2, 2]) + real.(ρs[:, 3, 3])), title="HEOM", label="XT")
+    plot!(times_HEOM.*au2fs, (real.(ρs[:, 4, 4]) + real.(ρs[:, 5, 5])), title="HEOM", label="CT")
 
 
     
@@ -272,8 +272,8 @@ function SFdimerTTM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cuto
     
 
     plot(ts.*au2fs, (real.(ρs[:, 1, 1])), title="TTM", label="TT")
-    plot!(ts.*au2fs, (real.(ρs[:, 2, 2]) + real.(ρs[:, 3, 3]) + real.(ρs[:, 5, 5])), title="TTM", label="XT")
-    plot!(ts.*au2fs, (real.(ρs[:, 4, 4]) + real.(ρs[:, 5, 5]) + real.(ρs[:, 8, 8]) + real.(ρs[:, 9, 9])), title="TTM", label="CT")
+    plot!(ts.*au2fs, (real.(ρs[:, 2, 2]) + real.(ρs[:, 3, 3])), title="TTM", label="XT")
+    plot!(ts.*au2fs, (real.(ρs[:, 4, 4]) + real.(ρs[:, 5, 5])), title="TTM", label="CT")
 
 
     
@@ -281,10 +281,11 @@ function SFdimerTTM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cuto
 
 end
 
-#SFtrimerHEOM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
+SFdimerTTM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
 
-#SFtrimerTTM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
+SFtrimerTTM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
 
-#SFdimerHEOM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
+SFdimerHEOM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
 
-#SFdimerTTM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
+SFtrimerHEOM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
+
