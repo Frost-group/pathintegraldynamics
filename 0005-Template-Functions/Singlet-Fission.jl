@@ -1,7 +1,6 @@
 # Simple script to execute HEOM and QuAPI-TTM for molecular trimer Singlet Fission simulations.
 
 using QuantumDynamics
-using Plots
 using LinearAlgebra
 using DelimitedFiles
 
@@ -82,14 +81,6 @@ function SFtrimerHEOM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cu
        writedlm(io, tpops, ' ')
    end
 
-    plot(times_HEOM.*au2fs, (real.(ρs[:, 1, 1]) + real.(ρs[:, 2, 2])), title="HEOM", label="TT")
-    plot!(times_HEOM.*au2fs, (real.(ρs[:, 3, 3]) + real.(ρs[:, 4, 4]) + real.(ρs[:, 5, 5])), title="HEOM", label="XT")
-    plot!(times_HEOM.*au2fs, (real.(ρs[:, 6, 6]) + real.(ρs[:, 7, 7]) + real.(ρs[:, 8, 8]) + real.(ρs[:, 9, 9])), title="HEOM", label="CT")
-
-
-    
-    savefig("Trimer-Rubrene-HEOM-populations.png")
-
 end
 
 
@@ -152,14 +143,6 @@ function SFtrimerTTM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cut
         tpops = [ts pops...]
         writedlm(io, tpops, ' ')
     end
-
-    plot(ts.*au2fs, (real.(ρs[:, 1, 1]) + real.(ρs[:, 2, 2])), title="TTM", label="TT")
-    plot!(ts.*au2fs, (real.(ρs[:, 3, 3]) + real.(ρs[:, 4, 4]) + real.(ρs[:, 5, 5])), title="TTM", label="XT")
-    plot!(ts.*au2fs, (real.(ρs[:, 6, 6]) + real.(ρs[:, 7, 7]) + real.(ρs[:, 8, 8]) + real.(ρs[:, 9, 9])), title="TTM", label="CT")
-
-
-    
-    savefig("Trimer-Rubrene-TTM-populations.png")
 
 end
 
@@ -230,13 +213,6 @@ function SFdimerHEOM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cut
        writedlm(io, tpops, ' ')
    end
 
-    plot(times_HEOM.*au2fs, (real.(ρs[:, 1, 1])), title="HEOM", label="TT")
-    plot!(times_HEOM.*au2fs, (real.(ρs[:, 2, 2]) + real.(ρs[:, 3, 3])), title="HEOM", label="XT")
-    plot!(times_HEOM.*au2fs, (real.(ρs[:, 4, 4]) + real.(ρs[:, 5, 5])), title="HEOM", label="CT")
-
-
-    
-    savefig("Dimer-Rubrene-HEOM-populations.png")
 end
 
 
@@ -295,13 +271,6 @@ function SFdimerTTM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cuto
         writedlm(io, tpops, ' ')
     end
 
-    plot(ts.*au2fs, (real.(ρs[:, 1, 1])), title="TTM", label="TT")
-    plot!(ts.*au2fs, (real.(ρs[:, 2, 2]) + real.(ρs[:, 3, 3])), title="TTM", label="XT")
-    plot!(ts.*au2fs, (real.(ρs[:, 4, 4]) + real.(ρs[:, 5, 5])), title="TTM", label="CT")
-
-
-    
-    savefig("Dimer-Rubrene-TTM-populations.png")
 
 end
 
