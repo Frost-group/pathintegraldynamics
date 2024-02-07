@@ -62,7 +62,7 @@ function HolsteinPolaron1D(N, v, reorg, cutoff; dt=0.25/au2fs, nsteps=400000, L=
        push!(sys_ops, op)
     end 
 
-    times_HEOM, ρs = HEOM.propagate(;
+    ts, ρs = HEOM.propagate(;
                                     Hamiltonian=H0,
                                     ρ0,
                                     β,
@@ -73,29 +73,16 @@ function HolsteinPolaron1D(N, v, reorg, cutoff; dt=0.25/au2fs, nsteps=400000, L=
                                     num_modes=K,
                                     Lmax=L)
 
-    for i in 1:N
-        plot!(times_HEOM.*au2fs, real.(ρs[:, i, i]), label="site $i")
+
+    
+    open("populations.txt", "w") do io
+        pops = [real.(ρs[:, i, i]) for i in 1:N]
+        tpops = [ts pops...]
+        writedlm(io, tpops, ' ')
     end
 
-    savefig("rubrene-HEOM-populations $L.png")
 
-    MSD = []
-    for i in 1:nsteps
-        s = 0.0
-        for j in 1:N
-            s += real(ρs[i, j, j])*(j)^2
-        end
-        push!(MSD, s)
-    end
-    
-    plot((times_HEOM[2:nsteps]).*au2fs, MSD[2:nsteps], xscale=:log10)
-    
-    savefig("rubrene-HEOM-MSD $L.png")
 
-    dMSD_dt = [(MSD[i] - MSD[i-1])/(dt*au2fs) for i in 2:40000]
-    plot((times_HEOM[2:40000]).*au2fs, dMSD_dt, xscale=:log10)
-    
-    savefig("rubrene-HEOM-dMSD_dt $L.png")
 end
 
 
@@ -151,30 +138,12 @@ function HolsteinPolaron1DTTM(N, v, reorg, cutoff; dt=0.25/au2fs, nsteps=400000,
                             path_integral_routine=TEMPO.build_augmented_propagator)
     
     
-    for i in 1:N
-        plot!(ts.*au2fs, real.(ρs[:, i, i]), label="site $i")
+    open("populations.txt", "w") do io
+        pops = [real.(ρs[:, i, i]) for i in 1:N]
+        tpops = [ts pops...]
+        writedlm(io, tpops, ' ')
     end
 
-    savefig("rubrene-TTM-populations $rmax.png")
-
-    MSD = []
-    for i in 1:nsteps
-        s = 0.0
-        for j in 1:N
-            s += real(ρs[i, j, j])*(j)^2
-        end
-        push!(MSD, s)
-    end
- 
-
-    plot((ts[2:nsteps]).*au2fs, MSD[2:nsteps], xscale=:log10)
-    
-    savefig("rubrene-TTM-MSD $rmax.png")
-
-    dMSD_dt = [(MSD[i] - MSD[i-1])/(dt*au2fs) for i in 2:nsteps]
-    plot((times_HEOM[2:nsteps]).*au2fs, dMSD_dt, xscale=:log10)
-    
-    savefig("rubrene-TTM-dMSD_dt $rmax.png")
 end
 #for i in 3:7
 #	HolsteinPolaron1D(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; L=i, K=2)

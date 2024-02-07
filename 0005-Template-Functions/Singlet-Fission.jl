@@ -76,6 +76,12 @@ function SFtrimerHEOM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cu
                                     num_modes=K,
                                     Lmax=L)
     
+    open("populations.txt", "w") do io
+       pops = [real.(ρs[:, i, i]) for i in 1:N]
+       tpops = [times_HEOM pops...]
+       writedlm(io, tpops, ' ')
+   end
+
     plot(times_HEOM.*au2fs, (real.(ρs[:, 1, 1]) + real.(ρs[:, 2, 2])), title="HEOM", label="TT")
     plot!(times_HEOM.*au2fs, (real.(ρs[:, 3, 3]) + real.(ρs[:, 4, 4]) + real.(ρs[:, 5, 5])), title="HEOM", label="XT")
     plot!(times_HEOM.*au2fs, (real.(ρs[:, 6, 6]) + real.(ρs[:, 7, 7]) + real.(ρs[:, 8, 8]) + real.(ρs[:, 9, 9])), title="HEOM", label="CT")
@@ -140,6 +146,12 @@ function SFtrimerTTM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cut
                             extraargs=TEMPO.TEMPOArgs(),
                             path_integral_routine=TEMPO.build_augmented_propagator)
     
+
+    open("populations.txt", "w") do io
+        pops = [real.(ρs[:, i, i]) for i in 1:N]
+        tpops = [ts pops...]
+        writedlm(io, tpops, ' ')
+    end
 
     plot(ts.*au2fs, (real.(ρs[:, 1, 1]) + real.(ρs[:, 2, 2])), title="TTM", label="TT")
     plot!(ts.*au2fs, (real.(ρs[:, 3, 3]) + real.(ρs[:, 4, 4]) + real.(ρs[:, 5, 5])), title="TTM", label="XT")
@@ -211,6 +223,13 @@ function SFdimerHEOM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cut
                                     num_modes=K,
                                     Lmax=L)
     
+
+    open("populations.txt", "w") do io
+       pops = [real.(ρs[:, i, i]) for i in 1:N]
+       tpops = [times_HEOM pops...]
+       writedlm(io, tpops, ' ')
+   end
+
     plot(times_HEOM.*au2fs, (real.(ρs[:, 1, 1])), title="HEOM", label="TT")
     plot!(times_HEOM.*au2fs, (real.(ρs[:, 2, 2]) + real.(ρs[:, 3, 3])), title="HEOM", label="XT")
     plot!(times_HEOM.*au2fs, (real.(ρs[:, 4, 4]) + real.(ρs[:, 5, 5])), title="HEOM", label="CT")
@@ -270,6 +289,11 @@ function SFdimerTTM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cuto
                             extraargs=TEMPO.TEMPOArgs(),
                             path_integral_routine=TEMPO.build_augmented_propagator)
     
+    open("populations.txt", "w") do io
+        pops = [real.(ρs[:, i, i]) for i in 1:N]
+        tpops = [ts pops...]
+        writedlm(io, tpops, ' ')
+    end
 
     plot(ts.*au2fs, (real.(ρs[:, 1, 1])), title="TTM", label="TT")
     plot!(ts.*au2fs, (real.(ρs[:, 2, 2]) + real.(ρs[:, 3, 3])), title="TTM", label="XT")
