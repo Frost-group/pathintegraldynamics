@@ -12,16 +12,16 @@ const nm2au = 18.897
 
 
 """
-plot1DHolstein(N)
+plot1DHolstein(N, a)
 
-Plot out the populations, MSD and dMSD/dt for an N-site Holstein polaron Hamiltonian.
+Plot out the populations, MSD and dMSD/dt for an N-site 1D lattice with spacing a (nm).
 
 """
 
-function plot1DHolstein(N, nsteps)
+function plot1DHolstein(N, a)
     # Plot populations
 
-    dlm = readdlm("test-pops.txt", Float64)
+    dlm = readdlm("polaron-1d-pops-rmax10.txt", Float64)
     
     t = dlm[:, 1].*au2fs
     
@@ -32,7 +32,7 @@ function plot1DHolstein(N, nsteps)
     for i in 2:size(dlm)[2]
         ρ = dlm[:, i]
         push!(ρs, ρ)
-        plot!(t, ρ, label="site $(i-1)")
+        plot!(t[2:nsteps], ρ[2:nsteps], label="site $(i-1)", xscale=:log10)
     end
     savefig("Populations.png")
     
@@ -40,7 +40,7 @@ function plot1DHolstein(N, nsteps)
     for i in 1:(nsteps+1)
         s= 0.0
         for j in 1:N
-            s += ρs[j][i]*(j-1)^2
+            s += ρs[j][i]*((j-1)^2)*(a * nm2au)^2
         end
         push!(MSD, s)
     end
@@ -51,7 +51,7 @@ function plot1DHolstein(N, nsteps)
 
     dMSD = [(MSD[i] - MSD[i-1])/(t[i] - t[i-1]) for i in 2:(nsteps+1)]
 
-    plot(t[2:nsteps], dMSD[2:nsteps], xscale=:log10)
+    plot(t[2:nsteps], dMSD[2:nsteps].*(5), xscale=:log10)
 
     savefig("dMSD_dt.png")
 
@@ -59,6 +59,6 @@ function plot1DHolstein(N, nsteps)
 
 end
 
-plot1DHolstein(10, 40000)
+plot1DHolstein(10, 0.5)
 
 
