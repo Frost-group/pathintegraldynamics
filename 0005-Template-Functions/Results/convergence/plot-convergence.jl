@@ -3,11 +3,12 @@ using DelimitedFiles
 
 function conv()
     fname = "CONVERGENCE-populations-rmax_"
-    dlm1 = readdlm(fname*"1.txt", Float64)
-    dlm2 = readdlm(fname*"2.txt", Float64)
-    dlm3 = readdlm(fname*"3.txt", Float64)
-    dlm4 = readdlm(fname*"4.txt", Float64)
-    dlm10 = readdlm(fname*"10.txt", Float64)
+    dlm1 = readdlm(fname*"1.stdout", Float64)
+    dlm2 = readdlm(fname*"2.stdout", Float64)
+    dlm3 = readdlm(fname*"3.stdout", Float64)
+    dlm4 = readdlm(fname*"4.stdout", Float64)
+    dlm5 = readdlm(fname*"5.stdout", Float64)
+    dlm10 = readdlm(fname*"10.stdout", Float64)
    
     t1 = dlm1[:, 1]
     ρ1 = dlm1[:, 4]
@@ -21,6 +22,9 @@ function conv()
     t4 = dlm4[:, 1]
     ρ4 = dlm4[:, 4]
     
+    t5 = dlm5[:, 1]
+    ρ5 = dlm5[:, 4]
+    
     t10 = dlm10[:, 1]
     ρ10 = dlm10[:, 4]
 
@@ -28,6 +32,7 @@ function conv()
     plot!(t2, ρ2, label="rmax2")
     plot!(t3, ρ3, label="rmax3")
     plot!(t4, ρ4, label="rmax4")
+    plot!(t5, ρ5, label="rmax5")
     plot!(t10, ρ10, label="rmax10")
     savefig("convergence-plot.png")
 end

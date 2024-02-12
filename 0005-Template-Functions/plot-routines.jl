@@ -57,8 +57,27 @@ function plot1DHolstein(fname, a)
 
     savefig("dMSD_dt.png")
     
+    # Moving average dMSD_dt
+    
+    n_bin = 45
+
+    mov = []
+    for i in 1:(length(enumerate(MSD))-n_bin)
+        sum = 0
+        for j in 1:n_bin
+            sum += MSD[i+j-1]
+        end
+        push!(mov, sum/(n_bin))
+    end
+    
+    dMSD_agg = [(MSD[i+1] - MSD[i-1])/(t[i+1] - t[i-1]) for i in 2:(nsteps-n_bin-1)]
+    
+    plot(t[2:(nsteps-n_bin-1)], dMSD_agg, xscale=:log10)
+
+    savefig("dMSD_agg.png")
+    
 end
 
-plot1DHolstein("populations-rmax_10.txt", 0.5)
+plot1DHolstein("populations-rmax_10.output", 0.5)
 
 
