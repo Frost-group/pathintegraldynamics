@@ -1,2 +1,4 @@
 sync-dir.sh
 *-output
+*.output
+*.stdout

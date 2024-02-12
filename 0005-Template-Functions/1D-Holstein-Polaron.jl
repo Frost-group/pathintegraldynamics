@@ -98,14 +98,15 @@ cutoff - cutoff frequency
 dt - timestep
 nsteps - number of propagation steps
 rmax - Memory length
-
+E - External Field (DRAGONS) - enter it in eV/Å or something to avoid having to do charge multiplication?
+a - Lattice spacing
 
 """
 
-function HolsteinPolaron1DTTM(N, v, reorg, cutoff; dt=0.25/au2fs, nsteps=400000, rmax=10)
+function HolsteinPolaron1DTTM(N, v, reorg, cutoff; dt=0.25/au2fs, nsteps=400000, rmax=10, E=0.0, a = 0.5*nm2au)
     H0 = Matrix{ComplexF64}(zeros(N, N))
     for i in 1:N
-        H0[i,i] = 0.0
+        H0[i,i] = 0.0 - i*a*E
         if i <= N-1
             H0[i, i+1] = v
         end
@@ -150,6 +151,6 @@ end
 #end
 
 #HolsteinPolaron1D(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; L=3, K=2)
-HolsteinPolaron1DTTM(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; rmax=10)
+HolsteinPolaron1DTTM(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; rmax=10, E=0.1*mev2au)
 
 

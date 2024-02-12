@@ -18,14 +18,16 @@ Plot out the populations, MSD and dMSD/dt for an N-site 1D lattice with spacing 
 
 """
 
-function plot1DHolstein(N, a)
+function plot1DHolstein(fname, a)
     # Plot populations
 
-    dlm = readdlm("polaron-1d-pops-rmax10.txt", Float64)
+    dlm = readdlm(fname, Float64)
     
     t = dlm[:, 1].*au2fs
     
     ρs = []
+
+    N = size(dlm)[2] - 1
 
     nsteps = size(dlm)[1]-1
 
@@ -49,16 +51,14 @@ function plot1DHolstein(N, a)
 
     savefig("MSD.png")
 
-    dMSD = [(MSD[i] - MSD[i-1])/(t[i] - t[i-1]) for i in 2:(nsteps+1)]
+    dMSD = [(MSD[i+1] - MSD[i-1])/(t[i+1] - t[i-1]) for i in 2:(nsteps)]
 
-    plot(t[2:nsteps], dMSD[2:nsteps].*(5), xscale=:log10)
+    plot(t[2:nsteps-1], dMSD[2:nsteps-1].*(5), xscale=:log10)
 
     savefig("dMSD_dt.png")
-
-
-
+    
 end
 
-plot1DHolstein(10, 0.5)
+plot1DHolstein("populations-rmax_10.txt", 0.5)
 
 
