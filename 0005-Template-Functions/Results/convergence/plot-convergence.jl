@@ -2,39 +2,29 @@ using Plots
 using DelimitedFiles
 
 function conv()
-    fname = "CONVERGENCE-populations-rmax_"
-    dlm1 = readdlm(fname*"1.stdout", Float64)
-    dlm2 = readdlm(fname*"2.stdout", Float64)
-    dlm3 = readdlm(fname*"3.stdout", Float64)
-    dlm4 = readdlm(fname*"4.stdout", Float64)
-    dlm5 = readdlm(fname*"5.stdout", Float64)
-    dlm10 = readdlm(fname*"10.stdout", Float64)
-   
-    t1 = dlm1[:, 1]
-    ρ1 = dlm1[:, 4]
+    dlms = []
+    rmax = []
+    for fname in readdir()
+        if fname[1:4] == "CONV"
+            push!(dlms, readdlm(fname, Float64))
+            push!(rmax, parse(Float64, fname[30:31]))
+        end 
 
-    t2 = dlm2[:, 1]
-    ρ2 = dlm2[:, 4]
-   
-    t3 = dlm3[:, 1]
-    ρ3 = dlm3[:, 4]
-
-    t4 = dlm4[:, 1]
-    ρ4 = dlm4[:, 4]
+    end
     
-    t5 = dlm5[:, 1]
-    ρ5 = dlm5[:, 4]
-    
-    t10 = dlm10[:, 1]
-    ρ10 = dlm10[:, 4]
 
-    plot!(t1, ρ1, label="rmax1")
-    plot!(t2, ρ2, label="rmax2")
-    plot!(t3, ρ3, label="rmax3")
-    plot!(t4, ρ4, label="rmax4")
-    plot!(t5, ρ5, label="rmax5")
-    plot!(t10, ρ10, label="rmax10")
+
+    for (i, dlm) in enumerate(dlms)
+        r = rmax[i]
+        N = size(dlm)[2] - 1
+        nsteps = size(dlm)[1]-1
+        t = dlm[:,1]
+        ρ4 = dlm[:, 4]
+        plot!(t[2:nsteps], ρ4[2:nsteps], label="site 4 population, rmax=$r",legend=:topleft, xscale=:log10)
+    end
+
     savefig("convergence-plot.png")
+
 end
 
 conv()
