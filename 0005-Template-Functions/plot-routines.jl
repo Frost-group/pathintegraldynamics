@@ -31,6 +31,8 @@ function plot1DHolstein(fname, a)
     N = size(dlm)[2] - 1
 
     nsteps = size(dlm)[1]-1
+    
+    nsteps = 5000
 
     @gp "set key left" "set logscale x"
     @gp :- "set title 'Populations'"
@@ -134,7 +136,8 @@ function UpconversionPlotDimer(fname)
     #savefig("Dimer-TTM-Populations.png")
 end
 
-#plot1DHolstein("withfieldAMC.stdout", 0.5)
-UpconversionPlotDimer("dimer-populations.stdout")
+# Used 0.5nm arbitrarily here, need to figure out site distances for real materials
+plot1DHolstein("Results/Ordejon-Rubrene/ordejon1D-populations.stdout", 0.5)
+#UpconversionPlotDimer("dimer-populations.stdout")
 
 
