@@ -115,28 +115,35 @@ function UpconversionPlotDimer(fname)
     N = size(dlm)[2] - 1
 
     nsteps = size(dlm)[1]-1
-
-    ρXT = dlm[:, 2] + dlm[:, 3]
-    ρCT = dlm[:, 4] + dlm[:, 5]
+    nsteps = 2000
+    ρXT1 = dlm[:, 2]
+    ρXT2 = dlm[:, 3]
+    ρCT1 = dlm[:, 4]
+    ρCT2 = dlm[:, 5]
 
     #plot!(t[2:nsteps], ρTT[2:nsteps], label="TT")
     #plot!(t[2:nsteps], ρXT1[2:nsteps]+ρXT2[2:nsteps], label="XT")
     #plot!(t[2:nsteps], ρCT1[2:nsteps]+ρCT2[2:nsteps], label="CT")
     
     @gp "set key left"
-    @gp :- "set title 'Dimer Singlet Fission'"
+    @gp :- "set title 'Y6 Dimer HEOM'"
+    @gp :- "set xlabel 't(fs)'"
+    @gp :- "set ylabel 'Population'"
     
     #@gp :- t[2:nsteps] ρTT[2:nsteps] "w l tit 'TT' dt 1 lw 2 lc rgb 'red' "
-    @gp :- t[2:nsteps] ρXT[2:nsteps] "w l tit 'XT' dt 1 lw 2 lc rgb 'blue' "
-    @gp :- t[2:nsteps] ρCT[2:nsteps] "w l tit 'CT' dt 1 lw 2 lc rgb 'green' "
+    @gp :- t[2:nsteps] ρXT1[2:nsteps] "w l tit 'XT1' dt 1 lw 2 lc rgb 'cyan' "
+    @gp :- t[2:nsteps] ρXT2[2:nsteps] "w l tit 'XT2' dt 1 lw 2 lc rgb 'blue' "
+    @gp :- t[2:nsteps] ρCT1[2:nsteps] "w l tit 'CT1' dt 1 lw 2 lc rgb '#74C476' "
+    @gp :- t[2:nsteps] ρCT2[2:nsteps] "w l tit 'CT2' dt 1 lw 2 lc rgb '#238B45' "
     
-    Gnuplot.save("Results/populations.png", term="pngcairo size 550,350 fontscale 0.8")
+    Gnuplot.save("Results/populations-heom.png", term="pngcairo size 550,350 fontscale 0.8")
 
     #savefig("Dimer-TTM-Populations.png")
 end
 
 # Used 0.5nm arbitrarily here, need to figure out site distances for real materials
 #plot1DHolstein("Results/Ordejon-Rubrene/ordejon1D-populations.stdout", 0.5)
+#UpconversionPlotDimer("Results/upconversion-populations-ttm.stdout")
 UpconversionPlotDimer("Results/upconversion-populations-heom.stdout")
 
 

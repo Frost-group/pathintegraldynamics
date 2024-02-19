@@ -17,7 +17,7 @@ UpconversionHEOM
 """
 
 
-function UpconversionHEOM(; dt=0.25/au2fs, nsteps=4000, L=3, K=2)
+function UpconversionHEOM(; dt=0.25/au2fs, nsteps=4000, L=5, K=2)
     
     # Params from Samuele paper
 
@@ -93,7 +93,7 @@ UpconversionTTM
 
 """
 
-function UpconversionTTM(; dt=0.25/au2fs, nsteps=4000, rmax=10)
+function UpconversionTTM(; dt=0.25/au2fs, nsteps=4000, rmax=15)
     
 
     reorg = 157 * mev2au
