@@ -151,6 +151,10 @@ end
 #end
 
 #HolsteinPolaron1D(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; L=3, K=2)
+
+# TODO : Next step is creating a slider for λ, γ and V to reproduce Brad's results.
+# TODO : Create a function for coupling to each phonon mode (Lorentzian broadening?)
+
 HolsteinPolaron1DTTM(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; rmax=10, E=0.1*mev2au)
 
 

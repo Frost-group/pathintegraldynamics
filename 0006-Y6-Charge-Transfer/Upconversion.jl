@@ -149,6 +149,10 @@ function UpconversionTTM(; dt=0.25/au2fs, nsteps=4000, rmax=15)
     end
 end
 
+# TODO : Add a diffusive ground state to TTM.
+# TODO : Trimer properties on TTM and HEOM
+
+
 UpconversionTTM() 
 
 UpconversionHEOM() 
