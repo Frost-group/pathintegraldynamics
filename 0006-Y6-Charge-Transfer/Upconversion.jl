@@ -1,4 +1,4 @@
-# Simple script to execute HEOM and QuAPI-TTM for molecular trimer Singlet Fission simulations.
+# Simple script to execute HEOM and TEMPO-TTM for molecular trimer Singlet Fission simulations.
 
 using QuantumDynamics
 using LinearAlgebra
@@ -11,87 +11,53 @@ const mev2invcm = 8.066
 const mev2au = mev2invcm * invcm2au
 const nm2au = 18.897
 
-"""
-UpconversionHEOM
 
 """
+Y6UpconversionTrimerHamiltonian
+
+"""
 
 
-function UpconversionHEOM(; dt=0.25/au2fs, nsteps=4000, L=5, K=2)
+function Y6UpconversionTrimerHamiltonian()
     
-    # Params from Samuele paper
-
-    # D1 dimer dynamics - FE vs CT character over time.
-
-    #reorg = 157 * mev2au
-
-    #cutoff = 1600 * invcm2au
-
-    #Efe = 2000.0
-    #Ect(r) = (2.19 -  4.959/(r))*1000  # Enter r in angstrom ; best fit equation for Ect
-    #Dh = 55.7
-    #De = 72.0
-    #V = -76.0
-    
-    #Ec = Ect(9.29)
-    
-    #N = 4
-
-
-# Dimer Hamiltonian
-
-#=
-    H0 = Matrix{ComplexF64}([    ## Check this pls
-        Efe V Dh De
-        V Efe De Dh
-        Dh De Ec 0.0
-        De Dh 0.0 Ec
-    ]) * mev2au
-=#
-
     # D1, D3, D8 trimer dynamics - FE vs CT character over time.
 
-   reorg = 157 * mev2au
+    λ = [repeat([157*mev2au], 3)..., repeat([240*mev2au], 6)...]
 
-   cutoff = 1600 * invcm2au
+    γ = repeat([1600 * invcm2au], 9)
 
-   Ef1 = 2046.0 # eV
-   Ef3 = 2046.0
-   Ef8 = 2046.0
+    Ef1 = 2046.0 # eV
+    Ef3 = 2046.0
+    Ef8 = 2046.0
 
-   Ect(r) = (2.19 -  4.959/(r))*1000  # Enter r in angstrom ; best fit equation for Ect
+    Ect(r) = (2.19 -  4.959/(r))*1000  # Enter r in angstrom ; best fit equation for Ect
    
-   r1 = 9.29
-   r3 = 13.84
-   r8 = 15.97
-
-   Dh1 = 55.7
-   Dh3 = -27.3
-   Dh8 = 0.0
-   De1 = 72.0
-   De3 = -15.0
-   De8 = 0.0
+    r1 = 9.29
+    r3 = 13.84
+    r8 = 15.97
+    Dh1 = 55.7
+    Dh3 = -27.3
+    Dh8 = 0.0
+    De1 = 72.0
+    De3 = -15.0
+    De8 = 0.0
    
-   V1 = -76.0
-   V3 = -6.1
-   V8 = -9.0
+    V1 = -76.0
+    V3 = -6.1
+    V8 = -9.0
    
-   Ec1 = Ect(r1) # 1656.2 eV
-   Ec3 = Ect(r3) # 1831.69 eV
-   Ec8 = Ect(r8) # 1879.48 eV
+    Ec1 = Ect(r1) # 1656.2 eV
+    Ec3 = Ect(r3) # 1831.69 eV
+    Ec8 = Ect(r8) # 1879.48 eV
    
-   te1 = 66.1
-   te3 = -27.0
-   te8 = 0.0
-   th1 = 49.6
-   th3 = -11.3
-   th8 = 0.0
+    te1 = 66.1
+    te3 = -27.0
+    te8 = 0.0
+    th1 = 49.6
+    th3 = -11.3
+    th8 = 0.0
 
-
-# Trimer Hamiltonian
     
-    
-
     H0 = Matrix{ComplexF64}([
          Ef1 V1 V8 Dh1 Dh8 De1 0.0 De8 0.0
          V1 Ef3 V3 De1 0.0 Dh1 Dh3 0.0 De3
@@ -102,8 +68,57 @@ function UpconversionHEOM(; dt=0.25/au2fs, nsteps=4000, L=5, K=2)
          0.0 Dh3 De3 0.0 te1 th8 Ec3 0.0 0.0
          De8 0.0 Dh8 0.0 0.0 te3 0.0 Ec8 th1
          0.0 De3 Dh3 te8 0.0 0.0 0.0 th1 Ec3
-    ]) * mev2au
+        ])
     
+    return λ, γ, H0
+
+end
+
+function Y6UpconversionDimerHamiltonian()
+    
+    # Params from Samuele paper
+
+    # D1 dimer dynamics - FE vs CT character over time.
+
+   reorg = 157 * mev2au
+
+   cutoff = 1600 * invcm2au
+
+   Efe = 2000.0
+   Ect(r) = (2.19 -  4.959/(r))*1000  # Enter r in angstrom ; best fit equation for Ect
+   Dh = 55.7
+   De = 72.0
+   V = -76.0
+   
+   Ec = Ect(9.29)
+   
+   N = 4
+
+
+# Dimer Hamiltonian
+
+
+    H0 = Matrix{ComplexF64}([    ## Check this pls
+        Efe V Dh De
+        V Efe De Dh
+        Dh De Ec 0.0
+        De Dh 0.0 Ec
+    ]) * mev2au
+
+    return reorg, cutoff, H0
+end
+
+"""
+UpconversionHEOM
+
+"""
+
+
+function UpconversionHEOM(; dt=0.25/au2fs, nsteps=4000, L=5, K=2)
+    λs, γs, H0 = Y6UpconversionTrimerHamiltonian()
+    
+    N = length(λs)
+
     ρ0 = Matrix{ComplexF64}(zeros(N, N))
     ρ0[2, 2] = 1.0
     β = 1 / (300 * 3.16683e-6) # T = 300K
@@ -112,8 +127,6 @@ function UpconversionHEOM(; dt=0.25/au2fs, nsteps=4000, L=5, K=2)
         svec[i] = i
     end
 
-    λs = repeat([reorg], N)
-    γs = repeat([cutoff], N)
 
     JwH = Vector{SpectralDensities.DrudeLorentz}()
     sys_ops = Vector{Matrix{ComplexF64}}()
@@ -144,6 +157,52 @@ function UpconversionHEOM(; dt=0.25/au2fs, nsteps=4000, L=5, K=2)
 
 end
 
+
+"""
+UpconversionRedfield
+
+"""
+
+
+function UpconversionRedfield(; dt=0.25/au2fs, nsteps=4000)
+    λs, γs, H0 = Y6UpconversionTrimerHamiltonian()
+    
+    N = length(λs)
+
+    ρ0 = Matrix{ComplexF64}(zeros(N, N))
+    ρ0[2, 2] = 1.0
+    β = 1 / (300 * 3.16683e-6) # T = 300K
+    svec = Matrix{Float64}(zeros(1, N))
+    for i in 1:N
+        svec[i] = i
+    end
+
+
+    JwH = Vector{SpectralDensities.DrudeLorentz}()
+    sys_ops = Vector{Matrix{ComplexF64}}()
+    for (j, (λ, γ)) in enumerate(zip(λs, γs))
+       push!(JwH, SpectralDensities.DrudeLorentz(; λ, γ, Δs=1.0))
+       op = zeros(N, N)
+       op[j, j] = 1.0
+       push!(sys_ops, op)
+    end
+
+    times_BRME, ρs = BlochRedfield.propagate(;
+                                    Hamiltonian=H0,
+                                    ρ0,
+                                    β,
+                                    dt,
+                                    ntimes=nsteps,
+                                    Jw=JwH,
+                                    sys_ops=sys_ops)
+
+    open("upconversion-populations-brme.stdout", "w") do io
+       pops = [real.(ρs[:, i, i]) for i in 1:N]
+       tpops = [times_BRME pops...]
+       writedlm(io, tpops, ' ')
+   end
+
+end
 
 
 """
@@ -211,7 +270,9 @@ end
 # TODO : Trimer properties on TTM and HEOM
 
 
-UpconversionTTM() 
+#UpconversionRedfield()
+
+#UpconversionTTM() 
 
 UpconversionHEOM() 
 
