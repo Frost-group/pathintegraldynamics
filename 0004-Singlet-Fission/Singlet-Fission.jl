@@ -1,8 +1,7 @@
-# Simple script to execute HEOM and QuAPI-TTM for molecular trimer Singlet Fission simulations.
+# Five State Singlet Fission Model with Redfield, HEOM and QuAPI/TEMPO-TTM.
+
 
 using QuantumDynamics
-using Plots
-using LinearAlgebra
 using DelimitedFiles
 
 const thz2au = 0.0001519828500716
@@ -13,144 +12,142 @@ const mev2au = mev2invcm * invcm2au
 const nm2au = 18.897
 
 
-"""
-SFtrimerHEOM
+function SingletFissionDimerModel(; dt=0.5/au2fs, nsteps=200)
+# Grozema PDI Dimer
 
-Sets up and runs HEOM calculation output- plot of populations of all sites.
+#   Es = 2.22 * 1000
+#   Ec = 3.11 * 1000
+#   Et =  1.05 * 1000
+#   t2e = -0.42
+#   thh = -125.0
+#   tll = 145.0
+#   thl = -125.0
+#   
+#   H0 = Matrix{ComplexF64}([
+#       Es 0 tll -thh t2e
+#       0 Es -thh tll t2e
+#       tll -thh Ec 0 sqrt(3/2)*thl
+#       -thh tll 0 Ec sqrt(3/2)*thl
+#       t2e t2e sqrt(3/2)*thl sqrt(3/2)*thl 2*Et
+#                           ]) * mev2au
 
-Ett, Ext, Ect - site energies
-Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc - Couplings
-reorg - reorganization energy
-cutoff - cutoff frequency
-dt - timestep
-nsteps - number of propagation steps
-Lmax - Hierarchy length
-K - number of Matsubara modes
+#   λ = 0.135 * 1000 * mev2au
+#   γ = 0.15 * 1000 * mev2au
+    
+# Troisi Rubrene Dimer
 
-"""
+    H0 = Matrix{ComplexF64}([
+        4.018 0.058 -0.086 0.168 0.000
+        0.058 4.017 -0.168 0.086 0.000
+        -0.086 -0.168 5.043 0.000 0.000
+        0.168 0.086 0.000 5.042 0.000
+        0.000 0.000 0.000 0.000 4.006
+                             ]) * 1000 * mev2au
 
-function SFtrimerHEOM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cutoff; dt=0.25/au2fs, nsteps=4000, L=5, K=2)
+    λ = 330*mev2au
+    γ = 1500*invcm2au
+    return H0, λ, γ
+end
 
-    N = 9
 
-    H0 = Matrix{ComplexF64}([    ## Check this pls
-        Ett 0.0 -Vtx Vtx 0.0 Vtc Vtc 0.0 0.0
-        0.0 Ett 0.0 Vtx -Vtx 0.0 0.0 Vtc Vtc
-        -Vtx 0.0 Ext Vxx 0.0 -Vhomo Vlumo 0.0 0.0
-        Vtx Vtx Vxx Ext Vxx -Vlumo Vhomo Vhomo -Vlumo
-        0.0 -Vtx 0.0 Vxx Ext 0.0 0.0 Vlumo -Vhomo
-        Vtc 0.0 -Vhomo -Vlumo 0.0 Ect -Vcc -Vcc 0.0
-        Vtc 0.0 Vlumo Vhomo 0.0 -Vcc Ect 0.0 -Vcc
-        0.0 Vtc 0.0 Vhomo Vlumo -Vcc 0.0 Ect -Vcc
-        0.0 Vtc 0.0 -Vlumo -Vhomo 0.0 -Vcc -Vcc Ect        
-    ]) * mev2au
+function SingletFissionRedfield(; dt=0.5/au2fs, nsteps=200)
+    H0, λ, γ = SingletFissionDimerModel()
+
+    N = 5 
+    
+    λs = repeat([λ], N)
+    γs = repeat([γ], N)
 
     ρ0 = Matrix{ComplexF64}(zeros(N, N))
     ρ0[1, 1] = 1.0
-    β = 1 / (300 * 3.16683e-6) # T = 300K
-    svec = Matrix{Float64}(zeros(1, N))
-    for i in 1:N
-        svec[i] = i
-    end
 
-    λs = repeat([reorg], N)
-    γs = repeat([cutoff], N)
+    T = 50.0:50.0:500.0
+
+    β = 1 / (300 * 3.16683e-6) # T = 300K
+
+    η = max(2*λ/(β*γ^2), 2*λ/(π*γ))
     
-    JwH = Vector{SpectralDensities.DrudeLorentz}()
+    println(η)
+    if η > 1
+        @warn "η = $η > 1 , Redfield may not be accurate"
+    end
+    
+    
+
+    Jw = Vector{SpectralDensities.DrudeLorentz}()
     sys_ops = Vector{Matrix{ComplexF64}}()
     for (j, (λ, γ)) in enumerate(zip(λs, γs))
-       push!(JwH, SpectralDensities.DrudeLorentz(; λ, γ, Δs=1.0))
-       op = zeros(N, N)
-       op[j, j] = 1.0
-       push!(sys_ops, op)
-    end 
-    
-    times_HEOM, ρs = HEOM.propagate(;
-                                    Hamiltonian=H0,
-                                    ρ0,
-                                    β,
-                                    dt,
-                                    ntimes=nsteps,
-                                    Jw=JwH,
-                                    sys_ops=sys_ops,
-                                    num_modes=K,
-                                    Lmax=L)
-    
-    plot(times_HEOM.*au2fs, (ρs[:, 1, 1] + ρs[:, 2, 2]), title="HEOM", label="TT")
-    plot!(times_HEOM.*au2fs, (ρs[:, 3, 3] + ρs[:, 4, 4] + ρs[:, 5, 5]), title="HEOM", label="XT")
-    plot!(times_HEOM.*au2fs, (ρs[:, 6, 6] + ρs[:, 7, 7] + ρs[:, 8, 8] + ρs[:, 9, 9]), title="HEOM", label="CT")
+        push!(Jw, SpectralDensities.DrudeLorentz(; λ, γ, Δs=1.0))
+        op = zeros(N, N)
+        op[j, j] = 1.0
+        push!(sys_ops, op)
+    end
 
-
+    ts, ρs = BlochRedfield.propagate(;
+                               Hamiltonian=H0,
+                               Jw=Jw,
+                               β,
+                               ρ0,
+                               dt,
+                               ntimes=nsteps,
+                               sys_ops)
     
-    savefig("Trimer-Rubrene-HEOM-populations.png")
+    open("redfield-SF-populations-Troisi-Rubrene.txt", "w") do io
+        pops = [real.(ρs[:, i, i]) for i in 1:N]
+        tpops = [ts pops...]
+        writedlm(io, tpops, ' ')
+    end
+
 
 end
 
 
-"""
-SFtrimerTTM
+function SingletFissionHEOM(; dt=0.5/au2fs, nsteps=200, Lmax=5, num_modes=2)
+    H0, λ, γ = SingletFissionDimerModel()
+    
+    N = 5
 
-Sets up and runs HEOM calculation output- plot of populations of all sites.
-
-Ett, Ext, Ect - site energies
-Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc - Couplings
-reorg - reorganization energy
-cutoff - cutoff frequency
-dt - timestep
-nsteps - number of propagation steps
-rmax - entanglement memory length
-"""
-
-function SFtrimerTTM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cutoff; dt=0.25/au2fs, nsteps=4000, rmax=10)
-
-    N = 9
-
-    H0 = Matrix{ComplexF64}([    ## Check this pls
-        Ett 0.0 -Vtx Vtx 0.0 Vtc Vtc 0.0 0.0
-        0.0 Ett 0.0 Vtx -Vtx 0.0 0.0 Vtc Vtc
-        -Vtx 0.0 Ext Vxx 0.0 -Vhomo Vlumo 0.0 0.0
-        Vtx Vtx Vxx Ext Vxx -Vlumo Vhomo Vhomo -Vlumo
-        0.0 -Vtx 0.0 Vxx Ext 0.0 0.0 Vlumo -Vhomo
-        Vtc 0.0 -Vhomo -Vlumo 0.0 Ect -Vcc -Vcc 0.0
-        Vtc 0.0 Vlumo Vhomo 0.0 -Vcc Ect 0.0 -Vcc
-        0.0 Vtc 0.0 Vhomo Vlumo -Vcc 0.0 Ect -Vcc
-        0.0 Vtc 0.0 -Vlumo -Vhomo 0.0 -Vcc -Vcc Ect        
-    ]) * mev2au
-
+    
+    λs = repeat([λ], N)
+    γs = repeat([γ], N)
     ρ0 = Matrix{ComplexF64}(zeros(N, N))
     ρ0[1, 1] = 1.0
+
+    T = 50.0:50.0:500.0
+
     β = 1 / (300 * 3.16683e-6) # T = 300K
-    svec = Matrix{Float64}(zeros(1, N))
-    for i in 1:N
-        svec[i] = i
+
+    Jw = Vector{SpectralDensities.DrudeLorentz}()
+    sys_ops = Vector{Matrix{ComplexF64}}()
+    for (j, (λ, γ)) in enumerate(zip(λs, γs))
+        push!(Jw, SpectralDensities.DrudeLorentz(; λ, γ, Δs=1.0))
+        op = zeros(N, N)
+        op[j, j] = 1.0
+        push!(sys_ops, op)
     end
+
+    ts, ρs = HEOM.propagate(;
+                         Hamiltonian=H0,
+                         Jw=Jw,
+                         β,
+                         ρ0,
+                         dt,
+                         ntimes=nsteps,
+                         sys_ops,
+                         Lmax=Lmax,
+                         num_modes=num_modes
+                        )
     
-    Jw = SpectralDensities.DrudeLorentz(λ=reorg, γ=cutoff, Δs=1.0)
+    open("HEOM-SF-populations-Troisi-Rubrene.txt", "w") do io
+        pops = [real.(ρs[:, i, i]) for i in 1:N]
+        tpops = [ts pops...]
+        writedlm(io, tpops, ' ')
+    end
 
-    fbU = Propagators.calculate_bare_propagators(; Hamiltonian=H0, dt=dt, ntimes=nsteps)
-
-    ts, ρs = TTM.propagate(; fbU=fbU,
-                            Jw=[Jw],
-                            β=β,
-                            ρ0=ρ0,
-                            dt=dt,
-                            ntimes=nsteps,
-                            rmax=rmax,
-                            svec=svec,
-                            extraargs=TEMPO.TEMPOArgs(),
-                            path_integral_routine=TEMPO.build_augmented_propagator)
-    
-
-    plot(ts.*au2fs, (ρs[:, 1, 1] + ρs[:, 2, 2]), title="TTM", label="TT")
-    plot!(ts.*au2fs, (ρs[:, 3, 3] + ρs[:, 4, 4] + ρs[:, 5, 5]), title="TTM", label="XT")
-    plot!(ts.*au2fs, (ρs[:, 6, 6] + ρs[:, 7, 7] + ρs[:, 8, 8] + ρs[:, 9, 9]), title="TTM", label="CT")
-
-
-    
-    savefig("Trimer-Rubrene-TTM-populations.png")
 
 end
 
-#SFtrimerHEOM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
+SingletFissionRedfield()
 
-SFtrimerTTM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
+SingletFissionHEOM()
+
