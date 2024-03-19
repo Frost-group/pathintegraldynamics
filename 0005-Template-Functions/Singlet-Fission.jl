@@ -274,11 +274,11 @@ function SFdimerTTM(Ett, Ext, Ect, Vtx, Vtc, Vxx, Vhomo, Vlumo, Vcc, reorg, cuto
 
 end
 
-SFdimerTTM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
+#SFdimerTTM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
 
-SFtrimerTTM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
+#SFtrimerTTM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
 
-SFdimerHEOM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
+#SFdimerHEOM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
 
-SFtrimerHEOM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
+#SFtrimerHEOM( 2.451*1000*mev2au, 2.311*1000*mev2au, 3.097*1000*mev2au, 0.0, 0.0, 0.079*1000*mev2au, -0.175*1000*mev2au, 0.086*1000*mev2au, 0.035*1000*mev2au, 0.71*1000*mev2au, 1/(100/au2fs)) 
 

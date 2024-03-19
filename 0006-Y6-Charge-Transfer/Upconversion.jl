@@ -167,11 +167,23 @@ UpconversionRedfield
 function UpconversionRedfield(; dt=0.25/au2fs, nsteps=4000)
     λs, γs, H0 = Y6UpconversionTrimerHamiltonian()
     
+
     N = length(λs)
 
     ρ0 = Matrix{ComplexF64}(zeros(N, N))
     ρ0[2, 2] = 1.0
     β = 1 / (300 * 3.16683e-6) # T = 300K
+
+    λ_av = sum(λs)/length(λs)
+    γ_av = sum(γs)/length(γs)
+
+    η = max(2*λ_av/(β*γ_av^2), 2*λ_av/(π*γ_av))
+    
+    println(η)
+
+    if η > 1
+        @info "η = $η > 1 ; Redfield is inaccurate here"
+    end
     svec = Matrix{Float64}(zeros(1, N))
     for i in 1:N
         svec[i] = i
@@ -274,6 +286,6 @@ end
 
 #UpconversionTTM() 
 
-UpconversionHEOM() 
+#UpconversionHEOM() 
 
 

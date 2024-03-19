@@ -1,7 +1,6 @@
 # Simple script to execute Hierarchical Equations of Motion output for Holstein polaron models.
 
 using QuantumDynamics
-using Plots
 using LinearAlgebra
 using DelimitedFiles
 
@@ -73,6 +72,16 @@ function HolsteinPolaron1D(N, v, reorg, cutoff; dt=0.25/au2fs, nsteps=400000, L=
                                     num_modes=K,
                                     Lmax=L)
 
+    ts_BRME, ρs_BRME = BlochRedfield.propagate(;
+                                    Hamiltonian=H0,
+                                    ρ0,
+                                    β,
+                                    dt,
+                                    ntimes=nsteps,
+                                    Jw=JwH,
+                                    sys_ops=sys_ops)
+
+
 
     
     open("populations.txt", "w") do io
@@ -103,7 +112,7 @@ a - Lattice spacing
 
 """
 
-function HolsteinPolaron1DTTM(N, v, reorg, cutoff; dt=0.25/au2fs, nsteps=400000, rmax=10, E=0.0, a = 0.5*nm2au)
+function HolsteinPolaron1DTTM(N, v, reorg, cutoff; dt=0.25/au2fs, nsteps=400, rmax=1, E=0.0, a = 0.5*nm2au)
     H0 = Matrix{ComplexF64}(zeros(N, N))
     for i in 1:N
         H0[i,i] = 0.0 - i*a*E
@@ -150,11 +159,11 @@ end
 #	HolsteinPolaron1D(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; L=i, K=2)
 #end
 
-#HolsteinPolaron1D(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; L=3, K=2)
+HolsteinPolaron1D(20, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; L=3, K=2)
 
 # TODO : Next step is creating a slider for λ, γ and V to reproduce Brad's results.
 # TODO : Create a function for coupling to each phonon mode (Lorentzian broadening?)
 
-HolsteinPolaron1DTTM(10, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; rmax=10, E=0.1*mev2au)
+#HolsteinPolaron1DTTM(20, 50*invcm2au, 161.5*invcm2au, 41*invcm2au; rmax=10, E=0.1*mev2au)
 
 

@@ -24,6 +24,7 @@ function SFPlotDimer(fname)
     N = size(dlm)[2] - 1
 
     nsteps = size(dlm)[1]-1
+
     ρXT1 = dlm[:, 2]
     ρXT2 = dlm[:, 3]
     ρCT1 = dlm[:, 4]
@@ -34,7 +35,7 @@ function SFPlotDimer(fname)
     #plot!(t[2:nsteps], ρCT1[2:nsteps]+ρCT2[2:nsteps], label="CT")
     
     @gp "set key left"
-    @gp :- "set title 'PDI Dimer HEOM'"
+    @gp :- "set title 'Rubrene Dimer Redfield'"
     @gp :- "set xlabel 't(fs)'"
     @gp :- "set ylabel 'Population'"
     
@@ -45,11 +46,11 @@ function SFPlotDimer(fname)
     @gp :- t[2:nsteps] ρCT2[2:nsteps] "w l tit 'CT2' dt 1 lw 2 lc rgb '#238B45' "
     @gp :- t[2:nsteps]  ρTT[2:nsteps] "w l tit 'TT' dt 1 lw 2 lc rgb 'red' "
     
-    Gnuplot.save("Results/populations-pdi-grozema-heom.png", term="pngcairo size 550,350 fontscale 0.8")
+    Gnuplot.save("Results/populations-rubrene-troisi-redfield.png", term="pngcairo size 550,350 fontscale 0.8")
 
     #savefig("Dimer-TTM-Populations.png")
 end
 
-SFPlotDimer("Results/HEOM-SF-populations-PDI-Grozema.stdout")
+SFPlotDimer("Results/redfield-SF-populations-Troisi-Rubrene.stdout")
 
 
