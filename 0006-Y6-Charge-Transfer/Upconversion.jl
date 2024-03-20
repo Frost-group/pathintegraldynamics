@@ -74,36 +74,48 @@ function Y6UpconversionTrimerHamiltonian()
 
 end
 
-function Y6UpconversionDimerHamiltonian()
+function Y6UpconversionDimerHamiltonianWTriplet(soc::Float64, Vct::Float64, Ett::Float64)
     
     # Params from Samuele paper
 
     # D1 dimer dynamics - FE vs CT character over time.
+    
+    reorg = [157.0, 157.0, 240.0, 240.0, 157.0]*mev2au
 
-   reorg = 157 * mev2au
+    cutoff = repeat([1600 * invcm2au], 5)
 
-   cutoff = 1600 * invcm2au
-
-   Efe = 2000.0
-   Ect(r) = (2.19 -  4.959/(r))*1000  # Enter r in angstrom ; best fit equation for Ect
-   Dh = 55.7
-   De = 72.0
-   V = -76.0
+    Efe = 2046.0
+    Ect(r) = (2.19 -  4.959/(r))*1000  # Enter r in angstrom ; best fit equation for Ect
+    Dh = 55.7
+    De = 72.0
+    V = -76.0
    
-   Ec = Ect(9.29)
+    Ec = Ect(9.29)
    
-   N = 4
+    N = 4
 
 
-# Dimer Hamiltonian
+    # Dimer Hamiltonian with singlet and CT states
 
-
-    H0 = Matrix{ComplexF64}([    ## Check this pls
+    #=H0 = Matrix{ComplexF64}([
         Efe V Dh De
         V Efe De Dh
         Dh De Ec 0.0
         De Dh 0.0 Ec
-    ]) * mev2au
+    ]) * mev2au =#
+
+    
+    # Dimer Hamiltonian including triplet with placeholder SoC
+    
+
+    H0 = Matrix{ComplexF64}([
+        Efe V Dh De soc
+        V Efe De Dh soc
+        Dh De Ec 0.0 Vct
+        De Dh 0.0 Ec Vct
+        soc soc Vct Vct Ett
+    ]) * mev2au 
+
 
     return reorg, cutoff, H0
 end
@@ -115,6 +127,7 @@ UpconversionHEOM
 
 
 function UpconversionHEOM(; dt=0.25/au2fs, nsteps=4000, L=5, K=2)
+    
     λs, γs, H0 = Y6UpconversionTrimerHamiltonian()
     
     N = length(λs)
@@ -164,14 +177,13 @@ UpconversionRedfield
 """
 
 
-function UpconversionRedfield(; dt=0.25/au2fs, nsteps=4000)
-    λs, γs, H0 = Y6UpconversionTrimerHamiltonian()
-    
-
+function UpconversionRedfield(s, V, E; dt=0.25/au2fs, nsteps=4000)
+   
+    λs, γs, H0 = Y6UpconversionDimerHamiltonianWTriplet(s/mev2invcm, V, E)
     N = length(λs)
 
     ρ0 = Matrix{ComplexF64}(zeros(N, N))
-    ρ0[2, 2] = 1.0
+    ρ0[1, 1] = 1.0
     β = 1 / (300 * 3.16683e-6) # T = 300K
 
     λ_av = sum(λs)/length(λs)
@@ -208,7 +220,7 @@ function UpconversionRedfield(; dt=0.25/au2fs, nsteps=4000)
                                     Jw=JwH,
                                     sys_ops=sys_ops)
 
-    open("upconversion-populations-brme.stdout", "w") do io
+    open("stdout-files/upconversion-populations-brme-s-$s-V-$V-t-$E.stdout", "w") do io
        pops = [real.(ρs[:, i, i]) for i in 1:N]
        tpops = [times_BRME pops...]
        writedlm(io, tpops, ' ')
@@ -281,8 +293,14 @@ end
 # TODO : Add a diffusive ground state to TTM.
 # TODO : Trimer properties on TTM and HEOM
 
+# UpconversionRedfield(s, V, E) - inputs - SOC (invcm), CT-TT coupling(mev), Triplet pair energy(mev)
 
-#UpconversionRedfield()
+#UpconversionRedfield(0.03, 0.1, 2000.0)
+for i in 2:1000:20000
+    for j in 2:2:20
+        UpconversionRedfield(i*0.03, j*10.0, 2000.0)
+    end
+end
 
 #UpconversionTTM() 
 
