@@ -3,6 +3,7 @@
 using QuantumDynamics
 using LinearAlgebra
 using DelimitedFiles
+using OrdinaryDiffEq
 
 const thz2au = 0.0001519828500716
 const invcm2au = 4.55633e-6
@@ -74,7 +75,7 @@ function Y6UpconversionTrimerHamiltonian()
 
 end
 
-function Y6UpconversionDimerHamiltonianWTriplet(soc::Float64, Vct::Float64, Ett::Float64)
+function Y6UpconversionDimerHamiltonianWTriplet(soc::Float64, Vct::Float64)
     
     # Params from Samuele paper
 
@@ -84,7 +85,7 @@ function Y6UpconversionDimerHamiltonianWTriplet(soc::Float64, Vct::Float64, Ett:
 
     cutoff = repeat([1600 * invcm2au], 5)
 
-    Efe = 2046.0
+    #Efe = 2046.0
     Ect(r) = (2.19 -  4.959/(r))*1000  # Enter r in angstrom ; best fit equation for Ect
     Dh = 55.7
     De = 72.0
@@ -92,9 +93,6 @@ function Y6UpconversionDimerHamiltonianWTriplet(soc::Float64, Vct::Float64, Ett:
    
     Ec = Ect(9.29)
    
-    N = 4
-
-
     # Dimer Hamiltonian with singlet and CT states
 
     #=H0 = Matrix{ComplexF64}([
@@ -107,12 +105,24 @@ function Y6UpconversionDimerHamiltonianWTriplet(soc::Float64, Vct::Float64, Ett:
     
     # Dimer Hamiltonian including triplet with placeholder SoC
     
+    # Zhenghan singlet values
+
+    Efe1 = 1872.0
+    Efe2 = 1886.0
+
+    # Zhenghan triplet values
+    Et1 = 1350.0
+    Et2 = 1393.0
+    
+    #Ett = Et1 + Et2
+
+    Ett = 2000.0
 
     H0 = Matrix{ComplexF64}([
-        Efe V Dh De soc
-        V Efe De Dh soc
-        Dh De Ec 0.0 Vct
-        De Dh 0.0 Ec Vct
+        Efe1 V Dh De soc 
+        V Efe2 De Dh soc 
+        Dh De Ec 0.0 Vct 
+        De Dh 0.0 Ec Vct 
         soc soc Vct Vct Ett
     ]) * mev2au 
 
@@ -121,15 +131,108 @@ function Y6UpconversionDimerHamiltonianWTriplet(soc::Float64, Vct::Float64, Ett:
 end
 
 """
+Boltzmann(E)
+
+Thermalized equilibrium populations when energies E and inv temp β are in atomic units
+
+"""
+
+
+function Boltzmann()
+    
+    λ, γ, H = Y6UpconversionDimerHamiltonianWTriplet(71.0, 162.0)
+    
+    N = length(λ)
+
+    E = [real(H[i, i]) for i in 1:N]
+    
+    β = 1052.0
+
+    Z = sum(ℯ.^(-β*E))
+
+    pops = [ℯ^(-β*Ei)/Z for Ei in E]
+    
+
+    open("boltzmann-populations.stdout", "w") do io
+        writedlm(io, pops, ' ')
+    end
+
+end
+
+
+
+"""
+Semiclassical()
+
+Rate matrix equilibrium populations
+
+"""
+
+Marcus(V, ΔE, β, λ) = 2*π*((V^2 * sqrt(β))/sqrt(4*π*λ))*exp(-1*β*(λ+ΔE)/(4*λ))
+
+λ, γ, H = Y6UpconversionDimerHamiltonianWTriplet(71.0, 162.0)
+
+β = 1052.0
+const kff = Marcus(real.(H[1,2]), real.(H[1,1] - H[2,2]), β, λ[1])
+const kfc = Marcus(real.(H[2,3]), real.(H[2,2] - H[3,3]), β, λ[3])
+const kct = Marcus(real.(H[4,5]), real.(H[4,4] - H[5,5]), β, λ[3])
+const kft = Marcus(real.(H[1,5]), real.(H[1,1] - H[5,5]), β, λ[5])
+
+
+function func_semi!(du, u, p, t)
+    rateMatrix = Matrix{ComplexF64}([
+        -(kff + 2*kfc + kft) kff kfc kfc kft
+        kff -(kff + 2*kfc + kft) kfc kfc kft
+        kfc kfc -(2*kff + kft) 0.0 kct
+        kfc kfc 0.0 -(2*kff + kft) kct
+        kft kft kct kct -(2*kft + 2*kct) ])
+
+
+    du = rateMatrix * u
+end
+function Semiclassical(soc, Vct; dt=0.25/au2fs, nsteps=4000)
+    
+    λ, γ, H = Y6UpconversionDimerHamiltonianWTriplet(soc, Vct)
+    
+    β = 1052.0
+    
+    rateMatrix = Matrix{ComplexF64}([
+        -(kff + 2*kfc + kft) kff kfc kfc kft
+        kff -(kff + 2*kfc + kft) kfc kfc kft
+        kfc kfc -(2*kff + kft) 0.0 kct
+        kfc kfc 0.0 -(2*kff + kft) kct
+        kft kft kct kct -(2*kft + 2*kct) ])
+
+
+    p0 = [1.0, 0.0, 0.0, 0.0, 0.0]
+
+    tspan = (0.0, nsteps*dt)
+    prob = ODEProblem(func_semi!, p0, tspan, rateMatrix)
+    sol = solve(prob, Tsit5(), saveat=dt) 
+    t = sol.t
+    ps = sol.u
+    open("ratematrix-populations.stdout", "w") do io
+        tpops = [t, ps...]
+        writedlm(io, tpops, ' ')
+    end
+end
+
+
+
+"""
 UpconversionHEOM
 
 """
 
 
-function UpconversionHEOM(; dt=0.25/au2fs, nsteps=4000, L=5, K=2)
-    
+function UpconversionHEOM(; dt=0.25/au2fs, nsteps=4000, L=1, K=2)
+
+    soc = 71.0
+    Vct = 162.0
+
+    #λs, γs, H0 = Y6UpconversionDimerHamiltonianWTriplet(soc, Vct)
     λs, γs, H0 = Y6UpconversionTrimerHamiltonian()
-    
+
     N = length(λs)
 
     ρ0 = Matrix{ComplexF64}(zeros(N, N))
@@ -162,7 +265,7 @@ function UpconversionHEOM(; dt=0.25/au2fs, nsteps=4000, L=5, K=2)
                                     Lmax=L)
 
 
-    open("upconversion-populations-heom.stdout", "w") do io
+    open("upconversion-trimer-populations-heom.stdout", "w") do io
        pops = [real.(ρs[:, i, i]) for i in 1:N]
        tpops = [times_HEOM pops...]
        writedlm(io, tpops, ' ')
@@ -177,13 +280,15 @@ UpconversionRedfield
 """
 
 
-function UpconversionRedfield(s, V, E; dt=0.25/au2fs, nsteps=4000)
+function UpconversionRedfield(s, V; dt=0.25/au2fs, nsteps=4000)
    
-    λs, γs, H0 = Y6UpconversionDimerHamiltonianWTriplet(s/mev2invcm, V, E)
+    #λs, γs, H0 = Y6UpconversionDimerHamiltonianWTriplet(s, V)
+
+    λs, γs, H0 = Y6UpconversionTrimerHamiltonian()
     N = length(λs)
 
     ρ0 = Matrix{ComplexF64}(zeros(N, N))
-    ρ0[1, 1] = 1.0
+    ρ0[2, 2] = 1.0
     β = 1 / (300 * 3.16683e-6) # T = 300K
 
     λ_av = sum(λs)/length(λs)
@@ -220,7 +325,8 @@ function UpconversionRedfield(s, V, E; dt=0.25/au2fs, nsteps=4000)
                                     Jw=JwH,
                                     sys_ops=sys_ops)
 
-    open("stdout-files/upconversion-populations-brme-s-$s-V-$V-t-$E.stdout", "w") do io
+   # open("stdout-files4/upconversion-populations-brme-s-$s-V-$V-t-$E.stdout", "w") do io
+   open("upconversion-redfield-trimer.stdout", "w") do io
        pops = [real.(ρs[:, i, i]) for i in 1:N]
        tpops = [times_BRME pops...]
        writedlm(io, tpops, ' ')
@@ -290,17 +396,23 @@ function UpconversionTTM(; dt=0.25/au2fs, nsteps=4000, rmax=15)
     end
 end
 
-# TODO : Add a diffusive ground state to TTM.
-# TODO : Trimer properties on TTM and HEOM
 
-# UpconversionRedfield(s, V, E) - inputs - SOC (invcm), CT-TT coupling(mev), Triplet pair energy(mev)
+
+Boltzmann()
+
+Semiclassical(71.0, 162.0)
+
+# UpconversionRedfield(s, V, E) - inputs - SOC (mev), CT-TT coupling(mev), Triplet pair energy(mev)
 
 #UpconversionRedfield(0.03, 0.1, 2000.0)
-for i in 2:1000:20000
-    for j in 2:2:20
-        UpconversionRedfield(i*0.03, j*10.0, 2000.0)
+
+#UpconversionRedfield(71.0, 162.0)
+
+#=for i in 1:5:100
+    for j in 2:8:200
+        UpconversionRedfield(i*1.0, j*1.0, 2743.0)
     end
-end
+end=#
 
 #UpconversionTTM() 
 
