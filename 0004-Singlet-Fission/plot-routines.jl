@@ -34,7 +34,7 @@ function SFPlotDimer(fname)
     #plot!(t[2:nsteps], ρCT1[2:nsteps]+ρCT2[2:nsteps], label="CT")
     
     @gp "set key left"
-    @gp :- "set title 'Rubrene Dimer HEOM'"
+    @gp :- "set title 'Rubrene Dimer Redfield'"
     @gp :- "set xlabel 't(fs)'"
     @gp :- "set ylabel 'Population'"
     
@@ -45,11 +45,12 @@ function SFPlotDimer(fname)
     @gp :- t[2:nsteps] ρCT2[2:nsteps] "w l tit 'CT2' dt 1 lw 2 lc rgb '#238B45' "
     @gp :- t[2:nsteps]  ρTT[2:nsteps] "w l tit 'TT' dt 1 lw 2 lc rgb 'red' "
     
-    Gnuplot.save("Results/populations-rubrene-troisi-heom-Lmax1.png", term="pngcairo size 550,350 fontscale 0.8")
+    Gnuplot.save("populations-rubrene-troisi-redfield.png", term="pngcairo size 550,350 fontscale 0.8")
 
     #savefig("Dimer-TTM-Populations.png")
 end
 
-SFPlotDimer("HEOM-SF-populations-Troisi-Rubrene.txt")
+#SFPlotDimer("HEOM-SF-populations-Troisi-Rubrene.txt")
+SFPlotDimer("redfield-SF-populations-Troisi-Rubrene.txt")
 
 

@@ -323,7 +323,9 @@ function UpconversionRedfield(s, V; dt=0.25/au2fs, nsteps=4000)
                                     dt,
                                     ntimes=nsteps,
                                     Jw=JwH,
-                                    sys_ops=sys_ops)
+                                    sys_ops=sys_ops,
+                                    extraargs = Utilities.DiffEqArgs(reltol=1e-10, abstol=1e-10, solver=RadauIIA3)
+                                   )
 
    # open("stdout-files4/upconversion-populations-brme-s-$s-V-$V-t-$E.stdout", "w") do io
    open("upconversion-redfield-trimer.stdout", "w") do io
