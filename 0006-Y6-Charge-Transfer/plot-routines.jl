@@ -17,13 +17,13 @@ function UpconversionPlotDimer(fname)
 
     dlm = readdlm(fname, Float64)
     
-    boltzdlm = readdlm("boltzmann-populations.stdout", Float64)
+    #boltzdlm = readdlm("../boltzmann-populations.stdout", Float64)
     
-    bXT1 = boltzdlm[1, 1]
-    bXT2 = boltzdlm[2, 1]
-    bCT1 = boltzdlm[3, 1]
-    bCT2 = boltzdlm[4, 1]
-    bTT1 = boltzdlm[5, 1]
+    #bXT1 = boltzdlm[1, 1]
+    #bXT2 = boltzdlm[2, 1]
+    #bCT1 = boltzdlm[3, 1]
+    #bCT2 = boltzdlm[4, 1]
+    #bTT1 = boltzdlm[5, 1]
     
 
     #tags = split(fname, "-")
@@ -48,11 +48,12 @@ function UpconversionPlotDimer(fname)
     #plot!(t[2:nsteps], ρCT1[2:nsteps]+ρCT2[2:nsteps], label="CT")
     
     @gp "set key left"
-    @gp :- "set title 'Y6 Dimer Redfield" #(Free Parameters - Vct = $V meV, SoC = $s meV)'"
+    @gp :- "set title 'Y6 Dimer HEOM" #(Free Parameters - Vct = $V meV, SoC = $s meV)'"
     @gp :- "set xlabel 't(fs)'"
     @gp :- "set ylabel 'Population'"
    
     @gp :- "set yrange[-0.1:1.0]"
+    @gp :- "set xrange[0:200]"
 
     @gp :- t[2:nsteps] ρTT1[2:nsteps] "w l tit 'TT1' dt 1 lw 2 lc rgb 'red' "
    # @gp :- t[2:nsteps] ρTT2[2:nsteps] "w l tit 'TT2' dt 1 lw 2 lc rgb 'red' "
@@ -61,14 +62,14 @@ function UpconversionPlotDimer(fname)
     @gp :- t[2:nsteps] ρCT1[2:nsteps] "w l tit 'CT1' dt 1 lw 2 lc rgb '#74C476' "
     @gp :- t[2:nsteps] ρCT2[2:nsteps] "w l tit 'CT2' dt 1 lw 2 lc rgb '#238B45' "
    
-
+#=
     @gp :- "plot $bTT1 w p notitle lc rgb 'red' pointtype 0"
     @gp :- "plot $bCT1 w p notitle lc rgb '#74C476' pointtype 0"
     @gp :- "plot $bCT2 w p notitle lc rgb '#238B45' pointtype 0"
     @gp :- "plot $bXT1 w p notitle lc rgb 'cyan' pointtype 0"
     @gp :- "plot $bXT2 w p notitle lc rgb 'blue' pointtype 0"
-
-    Gnuplot.save("Results/Y6-Redfield-With-Boltzmann.png", term="pngcairo size 550,350 fontscale 0.8")
+=#
+    Gnuplot.save("Results/Y6-HEOM-Dimer-Populations-zoom.png", term="pngcairo size 550,350 fontscale 0.8")
 
     #savefig("Dimer-TTM-Populations.png")
 end
@@ -187,7 +188,7 @@ end
 #end
 
 
-UpconversionPlotDimer("upconversion-populations-brme.stdout")
+UpconversionPlotDimer("upconversion-dimer-populations-heom.stdout")
 
 #UpconversionYieldDimer()
 # Used 0.5nm arbitrarily here, need to figure out site distances for real materials

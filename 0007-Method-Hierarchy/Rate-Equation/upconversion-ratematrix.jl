@@ -55,7 +55,7 @@ function Y6UpconversionDimerHamiltonian(soc::Float64, Vct::Float64)
 
     H0 = Matrix{ComplexF64}([
         Efe1 V Dh De soc 
-        V Efe2 De Dh soc 
+        V Efe1 De Dh soc 
         Dh De Ec 0.0 Vct 
         De Dh 0.0 Ec Vct 
         soc soc Vct Vct Ett
@@ -74,7 +74,9 @@ function UpconvertRateMatrix()
     λ = sum(λs)/N
     β = 1052.0 # 300K
     ts, ps = propagate(N, H0, λ, β, 4000, 0.25/au2fs)
-
+    
+    ts = ts.*au2fs
+    
     println(size(ts))
     println(size(ps[:, 1]))
     #println(ps)
@@ -83,6 +85,7 @@ function UpconvertRateMatrix()
     @gp :- "set title 'Y6 Dimer Redfield" #(Free Parameters - Vct = $V meV, SoC = $s meV)'"
     @gp :- "set xlabel 't(fs)'"
     @gp :- "set ylabel 'Population'"
+    @gp :- "set xrange [0:100]"
 
     @gp :- ts real.(ps[:, 5]) "w l tit 'TT1' dt 1 lw 2 lc rgb 'red' "
    # @gp :- t[2:nsteps] ρTT2[2:nsteps] "w l tit 'TT2' dt 1 lw 2 lc rgb 'red' "
@@ -91,7 +94,7 @@ function UpconvertRateMatrix()
    @gp :- ts real.(ps[:, 3]) "w l tit 'CT1' dt 1 lw 2 lc rgb '#74C476' "
    @gp :- ts real.(ps[:, 4]) "w l tit 'CT2' dt 1 lw 2 lc rgb '#238B45' "
   
-   Gnuplot.save("Y6-dimer-ratematrix.png", term="pngcairo size 550,350 fontscale 0.8")
+   Gnuplot.save("Y6-dimer-ratematrix-zoom.png", term="pngcairo size 550,350 fontscale 0.8")
 
 end
 
