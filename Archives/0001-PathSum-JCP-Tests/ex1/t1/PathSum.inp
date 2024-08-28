@@ -1,0 +1,47 @@
+Enter 'y' to choose atomic unit input/output; 'n' for cm-1 and fs:
+  'y'
+Enter type of system ('sysdisc' or 'syscont'): 
+  'sysdisc'  
+If this is a continuous system, give mass and minimum/maximum coordinate values:
+  1.   201   -6.  6. 
+Enter number of system states: 
+  2
+Enter 'y' for local baths, 'n' for common bath:
+   'n'
+For local baths, enter the distance between ground and excited states:
+  2.
+Enter type of bath ('specdisc' or 'speccont') and choose Ohmic or numerical J(w).
+For continuous bath enter the number of frequency grid points starting from w=0. 
+For Ohmic spectral density enter the Kondo parameter xi and cutoff frequency wc:
+  'speccont'  'Ohmic'  80001  0.1  7.5 
+For discrete bath enter the number of discrete bath modes:
+  50
+Enter total number N of propagation steps:
+  600
+Enter entanglement parameter rmax (this is also the iQuAPI memory length):
+  10
+Enter extended memory length L (must be greater than or equal to rmax):
+  10
+Enter reciprocal temperature beta in atomic units (300K is 1052):
+  5
+Enter time step in atomic units:
+ 0.2
+Enter path threshold:
+ 1.d-40
+For discrete system and common bath, enter the coordinates of the system sites:
+  1.0  -1.0 
+Enter initially populated site for which results are printed:
+  1
+Enter method to be used for iteration: iQuAPI or SMatPI (spelled this way!) 
+ SMatPI
+For SMatPI iteration choose within-memory method: 1=QuAPI, 2=BlipSum, 3=TEMPO
+  3
+If the chosen method is BlipSum, enter maximum number of blips to be placed
+on time points 0,...,N:
+  14
+If the chosen method is TEMPO, enter SVD threshold:
+ 1e-4
+For MPI module: First enter the number of identical TLSs:
+   3
+Next, enter the TLS-TLS coupling:
+  -0.8  -0.8  -0.8

@@ -1,0 +1,43 @@
+reset
+set key
+show key
+set termoption enhanced
+set encoding iso_8859_1 
+set border lw 1
+
+set key right top # below 
+set key font ",10"
+set tics font ", 30"
+#set key spacing 1
+set key samplen 2
+#set key left top #left box 1 
+#set key width -1.8
+#set logscale x
+#set logscale y
+
+set origin 0, 0
+set xlabel "{/Helvetica-Italic t}"
+set ylabel "{/Helvetica-Italic P(t)}"
+
+set style line 1 lt 10 pt 13 ps 1.2 lc rgb "forest-green" lw 3
+set style line 2 lt 5 pt 7 ps 1.2 lc rgb "blue" lw 3
+set style line 3 lt 3 pt 9 ps 1.2 lc rgb "plum" lw 3
+set style line 4 lt 4 pt 15 ps 1.2 lc rgb "skyblue" lw 3
+set style line 6 lt 7 pt 7 ps 1.2 lc rgb "#6A5ACD" lw 3
+set style line 5 lt 1 pt 13 ps 1.2 lc rgb "#556B2A" lw 3
+set style line 7 lt 1 pt 13 ps 1.2 lc rgb "orange-red" lw 3
+set style line 8 lt 1 pt 13 ps 1.2 lc rgb "#000000" lw 3
+set style line 9 lt 1 pt 13 ps 1.2 lc rgb "midnight-blue" lw 3
+set style line 9 lt 1 pt 13 ps 1.2 lc rgb "cyan" lw 3
+
+p 'AMC-holstein-output' u ($1)*0.02418884254:($2) w lp ls 3 t '1'
+rep 'AMC-holstein-output' u ($1)*0.02418884254:($5) w lp ls 1 t '2'
+rep 'AMC-holstein-output' u ($1)*0.02418884254:($10) w lp ls 2 t '3'
+rep 'AMC-holstein-output' u ($1)*0.02418884254:($17) w lp ls 4 t '4'
+rep 'AMC-holstein-output' u ($1)*0.02418884254:($26) w lp ls 5 t '5'
+
+
+
+set terminal postscript enhanced "Helvetica,30" color
+set output "holstein-AMC.eps"
+rep
