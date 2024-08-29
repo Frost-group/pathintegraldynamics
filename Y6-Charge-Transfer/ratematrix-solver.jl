@@ -47,50 +47,86 @@ function func_Pauli(p, params, t)
 end
 =#
 
+Marcus(V, ΔE, β, λ) =2*pi*((V^2 * sqrt(β))/sqrt(4*π*λ))*exp(-1*β*(λ+ΔE)^2/(4*λ))
+
+
 struct Params
     kf1f2
     kf2f1
-    kfc1
-    kcf1
-    kfc2
-    kcf2
-    kct
-    ktc
-    kft1
-    ktf1
-    kft2
-    ktf2
+    kf1c1
+    kc1f1
+    kf1c2
+    kc2f1
+    kf2c1
+    kc1f2
+    kf2c2
+    kc2f2
+    kc1t1
+    kt1c1
+    kc1t2
+    kt2c1 
+    kc2t1
+    kt1c2
+    kc2t2
+    kt2c2
+    kf1t1
+    kt1f1
+    kf1t2
+    kt2f1
+    kf2t1
+    kt1f2 
+    kf2t2
+    kt2f2
+    kt1t2
+    kt2t1
 end
 
 function Params(H, β, λ)
-    kf1f2 = Marcus(real.(H[1,2]), real.(H[2,2] - H[1,1]), β, λ[1])
-    kf2f1 = Marcus(real.(H[1,2]), real.(H[1,1] - H[2,2]), β, λ[1])
-    kfc1 = Marcus(real.(H[1,3]), real.(H[3,3] - H[1,1]), β, λ[3])
-    kcf1 = Marcus(real.(H[1,3]), real.(H[1,1] - H[3,3]), β, λ[3])
-    kfc2 = Marcus(real.(H[2,3]), real.(H[3,3] - H[2,2]), β, λ[3])
-    kcf2 = Marcus(real.(H[2,3]), real.(H[2,2] - H[3,3]), β, λ[3])
-    kct = Marcus(real.(H[4,5]), real.(H[5,5] - H[4,4]), β, λ[3])
-    ktc = Marcus(real.(H[4,5]), real.(H[4,4] - H[5,5]), β, λ[3])
-    kft1 = Marcus(real.(H[1,5]), real.(H[5,5] - H[1,1]), β, λ[5])
-    ktf1 = Marcus(real.(H[1,5]), real.(H[1,1] - H[5,5]), β, λ[5])
-    kft2 = Marcus(real.(H[2,5]), real.(H[5,5] - H[2,2]), β, λ[5])
-    ktf2 = Marcus(real.(H[2,5]), real.(H[2,2] - H[5,5]), β, λ[5])
+kf1f2 = Marcus(real.(H[1,2]), real.(H[2,2] - H[1,1]), β, λ[1])
+kf2f1 = Marcus(real.(H[1,2]), real.(H[1,1] - H[2,2]), β, λ[1])
+kf1c1 = Marcus(real.(H[1,3]), real.(H[3,3] - H[1,1]), β, λ[3])
+kc1f1 = Marcus(real.(H[1,3]), real.(H[1,1] - H[3,3]), β, λ[3])
+kf1c2 = Marcus(real.(H[1,4]), real.(H[4,4] - H[1,1]), β, λ[3])
+kc2f1 = Marcus(real.(H[1,4]), real.(H[1,1] - H[4,4]), β, λ[3])
+kf2c1 = Marcus(real.(H[2,3]), real.(H[3,3] - H[2,2]), β, λ[3])
+kc1f2 = Marcus(real.(H[2,3]), real.(H[2,2] - H[3,3]), β, λ[3])
+kf2c2 = Marcus(real.(H[2,4]), real.(H[4,4] - H[2,2]), β, λ[3])
+kc2f2 = Marcus(real.(H[2,4]), real.(H[2,2] - H[4,4]), β, λ[3])
+kc1t1 = Marcus(real.(H[3,5]), real.(H[5,5] - H[3,3]), β, λ[3])
+kt1c1 = Marcus(real.(H[3,5]), real.(H[3,3] - H[5,5]), β, λ[3])
+kc1t2 = Marcus(real.(H[3,6]), real.(H[6,6] - H[3,3]), β, λ[3])
+kt2c1 = Marcus(real.(H[3,6]), real.(H[3,3] - H[6,6]), β, λ[3])
+kc2t1 = Marcus(real.(H[4,5]), real.(H[5,5] - H[4,4]), β, λ[3])
+kt1c2 = Marcus(real.(H[4,5]), real.(H[4,4] - H[5,5]), β, λ[3])
+kc2t2 = Marcus(real.(H[4,6]), real.(H[6,6] - H[4,4]), β, λ[3])
+kt2c2 = Marcus(real.(H[4,6]), real.(H[4,4] - H[6,6]), β, λ[3])
+kf1t1 = Marcus(real.(H[1,5]), real.(H[5,5] - H[1,1]), β, λ[5])
+kt1f1 = Marcus(real.(H[1,5]), real.(H[1,1] - H[5,5]), β, λ[5])
+kf1t2 = Marcus(real.(H[1,6]), real.(H[6,6] - H[1,1]), β, λ[5])
+kt2f1 = Marcus(real.(H[1,6]), real.(H[1,1] - H[6,6]), β, λ[5])
+kf2t1 = Marcus(real.(H[2,5]), real.(H[5,5] - H[2,2]), β, λ[5])
+kt1f2 = Marcus(real.(H[2,5]), real.(H[2,2] - H[5,5]), β, λ[5])
+kf2t2 = Marcus(real.(H[2,6]), real.(H[6,6] - H[2,2]), β, λ[5])
+kt2f2 = Marcus(real.(H[2,6]), real.(H[2,2] - H[6,6]), β, λ[5])
+kt1t2 = Marcus(real.(H[5,6]), real.(H[6, 6] - H[5,5]), β, λ[3])
+kt2t1 = Marcus(real.(H[5,6]), real.(H[5, 5] - H[6,6]), β, λ[3])   
 
-    Params(kf1f2, kf2f1, kfc1, kcf1, kfc2, kcf2, kct, ktc, kft1, ktf1, kft2, ktf2)
+
+    Params(kf1f2, kf2f1, kf1c1, kc1f1, kf1c2, kc2f1, kf2c1, kc1f2, kf2c2, kc2f2, kc1t1, kt1c1, kc1t2, kt2c1, kc2t1, kt1c2, kc2t2, kt2c2, kf1t1, kt1f1, kf1t2, kt2f1, kf2t1, kt1f2, kf2t2, kt2f2, kt1t2, kt2t1)
 end
 
 
-Marcus(V, ΔE, β, λ) =2*pi*((V^2 * sqrt(β))/sqrt(4*π*λ))*exp(-1*β*(λ+ΔE)^2/(4*λ))
 #/(4.136*10^-12*mev2au)
 
 
 
 function func_semi2!(du, u, p, t)
-    du[1]=-(p.kf1f2 + 2*p.kfc1 + p.kft1)*u[1]+ p.kf2f1*u[2]+p.kcf1*u[3]+p.kcf1*u[4]+p.ktf1*u[5]
-    du[2]=p.kf1f2*u[1] -(p.kf2f1 + 2*p.kfc2 + p.kft2)*u[2]+ p.kcf2*u[3]+ p.kcf2*u[4]+ p.ktf2*u[5]
-    du[3]=p.kfc1*u[1]+p.kfc2*u[2] -(p.kcf1+p.kcf2+p.kct)*u[3]+ p.ktc*u[5]
-    du[4]=p.kfc1*u[1]+p.kfc2*u[2]  -(p.kcf1+p.kcf2 + p.kct)*u[4]+ p.ktc*u[5]
-    du[5]=p.kft1*u[1]+p.kft2*u[2]+p.kct*u[3]+p.kct*u[4] -(p.ktf1+p.ktf2 + 2*p.ktc)*u[5]
+    du[1]=-(p.kf1f2 + p.kf1c1 + p.kf1c2+ p.kf1t1+p.kf1t2)*u[1]+p.kf2f1*u[2]+p.kc1f1*u[3]+p.kc2f1*u[4]+p.kt1f1*u[5]+p.kt2f1*u[5]
+    du[2]=p.kf1f2*u[1] -(p.kf2f1 + p.kf2c1+ p.kf2c2 + p.kf2t1+p.kf2t2)*u[2]+ p.kc1f2*u[3]+ p.kc2f2*u[4]+ p.kt1f2*u[5]+ p.kt2f2*u[5]
+    du[3]=p.kf1c1*u[1]+p.kf2c1*u[2] -(p.kc1f1+p.kc1f2+p.kc1t1+p.kc1t2)*u[3]+ p.kt1c1*u[5]+p.kt2c1*u[5]
+    du[4]=p.kf1c2*u[1]+p.kf2c2*u[2] -(p.kc2f1+p.kc2f2+p.kc2t1+p.kc2t2)*u[4]+ p.kt1c2*u[5]+p.kt2c2*u[5]
+    du[5]=p.kf1t1*u[1]+p.kf2t1*u[2]+p.kc1t1*u[3]+p.kc2t1*u[4] -(p.kt1f1+p.kt1f2 +p.kt1c1+p.kt1c2+p.kt1t2)*u[5]+p.kt2t1*u[6]
+    du[6]=p.kf1t2*u[1]+p.kf2t2*u[2]+p.kc1t2*u[3]+p.kc2t2*u[4] -(p.kt2f1+p.kt2f2 +p.kt2c1+p.kt2c2+p.kt2t1)*u[6]+p.kt1t2*u[5]
 end
 
 

@@ -77,13 +77,13 @@ function Y6UpconversionTrimerHamiltonian()
 
 end
 
-function Y6UpconversionDimerHamiltonianWTriplet(soc::Float64, Vct::Float64)
+function Y6UpconversionDimerHamiltonianWTriplet(socs::Float64, socn::Float64, Vcte::Float64, Vcth::Float64)
     
     # Params from Samuele paper
 
     # D1 dimer dynamics - FE vs CT character over time.
     
-    reorg = [157.0, 157.0, 240.0, 240.0, 157.0]*mev2au
+    reorg = [157.0, 157.0, 480.0, 480.0, 157.0]*mev2au
 
     cutoff = repeat([1600 * invcm2au], 5)
 
@@ -94,6 +94,9 @@ function Y6UpconversionDimerHamiltonianWTriplet(soc::Float64, Vct::Float64)
     V = -76.0
    
     Ec = Ect(9.29)
+
+
+    Vt = -76.0 # Tripelt-Triplet coupling (assumed same as singlet-singlet)
    
     # Dimer Hamiltonian with singlet and CT states
 
@@ -106,8 +109,8 @@ function Y6UpconversionDimerHamiltonianWTriplet(soc::Float64, Vct::Float64)
 
     
     # Zhenghan triplet values
-#    Et1 = 1350.0
-#    Et2 = 1393.0
+    Et1 = 1350.0
+    Et2 = 1393.0
     
 #    Ett = Et1 + Et2
 
@@ -122,13 +125,26 @@ function Y6UpconversionDimerHamiltonianWTriplet(soc::Float64, Vct::Float64)
 
     Ett = 1350.0
 
-    H0 = Matrix{ComplexF64}([
+    #=H0 = Matrix{ComplexF64}([
         Efe1 V Dh De soc 
         V Efe2 De Dh soc 
         Dh De Ec 0.0 Vct 
         De Dh 0.0 Ec Vct 
         soc soc Vct Vct Ett
-    ]) * mev2au 
+    ]) * mev2au =#
+
+    # Six state Hamiltonian with 2 triplets
+
+    
+    H0 = Matrix{ComplexF64}([
+        Efe1 V Dh De socs socn 
+        V Efe2 De Dh socn socs 
+        Dh De Ec 0.0 Vcth Vcte 
+        De Dh 0.0 Ec Vcte Vcth 
+        socs socn Vcth Vcte Et1 Vt
+        socn socs Vcte Vcth Vt Et2
+
+    ]) * mev2au
 
 
     return reorg, cutoff, H0
