@@ -123,7 +123,9 @@ UpconversionRedfield
 
 function UpconversionRedfield(s, V; dt=0.25/au2fs, nsteps=4000)
    
-    λs, γs, H0 = Y6UpconversionDimerHamiltonian(s, s, V, V)
+    #λs, γs, H0 = Y6UpconversionDimerHamiltonian(s, s, V, V)
+    
+    λs, γs, H0 = Y6UpconversionDimerSink(s, s, V, V)
 
 
     N = length(λs)
@@ -169,7 +171,7 @@ function UpconversionRedfield(s, V; dt=0.25/au2fs, nsteps=4000)
                                    )
 
    # open("stdout-files4/upconversion-populations-brme-s-$s-V-$V-t-$E.stdout", "w") do io
-   open("upconversion-redfield-dimer.stdout", "w") do io
+   open("upconversion-redfield-dimer-with-sink.stdout", "w") do io
        pops = [real.(ρs[:, i, i]) for i in 1:N]
        tpops = [times_BRME pops...]
        writedlm(io, tpops, ' ')
@@ -242,8 +244,8 @@ end
 
 #UpconvertRateMatrix()
 
-#UpconversionRedfield(71.0, 162.0)
+UpconversionRedfield(71.0, 162.0)
 
-UpconversionHEOM(71.0, 162.0)
+#UpconversionHEOM(71.0, 162.0)
 
 

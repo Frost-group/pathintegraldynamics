@@ -43,12 +43,13 @@ function UpconversionPlotDimer(fname)
     ρCT2 = dlm[:, 5]
     ρTT1 = dlm[:, 6]
     ρTT2 = dlm[:, 7]
+    ρGS = dlm[:, 8]
     #plot!(t[2:nsteps], ρTT[2:nsteps], label="TT")
     #plot!(t[2:nsteps], ρXT1[2:nsteps]+ρXT2[2:nsteps], label="XT")
     #plot!(t[2:nsteps], ρCT1[2:nsteps]+ρCT2[2:nsteps], label="CT")
     
     @gp "set key left"
-    @gp :- "set title 'Y6 Dimer HEOM'" #(Free Parameters - Vct = $V meV, SoC = $s meV)'"
+    @gp :- "set title 'Y6 Dimer Redfield'" #(Free Parameters - Vct = $V meV, SoC = $s meV)'"
     @gp :- "set xlabel 't(fs)'"
     @gp :- "set ylabel 'Population'"
    
@@ -61,6 +62,7 @@ function UpconversionPlotDimer(fname)
     @gp :- t[2:nsteps] ρXT2[2:nsteps] "w l tit 'XT2' dt 1 lw 2 lc rgb 'blue' "
     @gp :- t[2:nsteps] ρCT1[2:nsteps] "w l tit 'CT1' dt 1 lw 2 lc rgb '#74C476' "
     @gp :- t[2:nsteps] ρCT2[2:nsteps] "w l tit 'CT2' dt 1 lw 2 lc rgb '#238B45' "
+    @gp :- t[2:nsteps] ρGS[2:nsteps] "w l tit 'GS' dt 1 lw 2 lc rgb 'purple' "
    
 #=
     @gp :- "plot $bTT1 w p notitle lc rgb 'red' pointtype 0"
@@ -69,7 +71,7 @@ function UpconversionPlotDimer(fname)
     @gp :- "plot $bXT1 w p notitle lc rgb 'cyan' pointtype 0"
     @gp :- "plot $bXT2 w p notitle lc rgb 'blue' pointtype 0"
 =#
-    Gnuplot.save("Results/Y6-heom-populations.png", term="pngcairo size 550,350 fontscale 0.8")
+    Gnuplot.save("Results/Y6-sink-redfield-populations.png", term="pngcairo size 550,350 fontscale 0.8")
 
     #savefig("Dimer-TTM-Populations.png")
 end
@@ -188,7 +190,7 @@ end
 #end
 
 
-UpconversionPlotDimer("upconversion-dimer-populations-heom.stdout")
+UpconversionPlotDimer("upconversion-redfield-dimer-with-sink.stdout")
 
 #UpconversionYieldDimer()
 # Used 0.5nm arbitrarily here, need to figure out site distances for real materials

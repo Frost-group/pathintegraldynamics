@@ -72,9 +72,9 @@ function Y6UpconversionDimerSink(socs::Float64, socn::Float64, Vcte::Float64, Vc
 
     # D1 dimer dynamics - FE vs CT character over time.
     
-    reorg = [157.0, 157.0, 240.0, 240.0, 157.0]*mev2au
+    reorg = [157.0, 157.0, 240.0, 240.0, 157.0, 157.0, 157.0]*mev2au
 
-    cutoff = repeat([1600 * invcm2au], 5)
+    cutoff = repeat([1600 * invcm2au], 7)
 
     #Efe = 2046.0
     Ect(r) = (2.19 -  4.959/(r))*1000  # Enter r in angstrom ; best fit equation for Ect
