@@ -86,18 +86,6 @@ function Y6UpconversionDimerSink(socs::Float64, socn::Float64, Vcte::Float64, Vc
    
     Ec = Ect(9.29)
    
-    # Dimer Hamiltonian with singlet and CT states
-
-    #=H0 = Matrix{ComplexF64}([
-        Efe V Dh De
-        V Efe De Dh
-        Dh De Ec 0.0
-        De Dh 0.0 Ec
-    ]) * mev2au =#
-
-    
-    # Dimer Hamiltonian including triplet with placeholder SoC
-    
     # Zhenghan singlet values
 
     Efe1 = 1872.0
@@ -111,11 +99,11 @@ function Y6UpconversionDimerSink(socs::Float64, socn::Float64, Vcte::Float64, Vc
 
     Ett = 1350.0
 
-    Egs = 0.0 # Energy of sink state
+    Egs = 0.0 # (very low?) energy of sink state
     
-    Vfg = 100.0 # Strongly couples??
-    Vcg = 100.0
-    Vtg = 100.0
+    Vfg = 10.0 # Weakly couples??
+    Vcg = 10.0
+    Vtg = 10.0
 
     H0 = Matrix{ComplexF64}([
         Efe1 V Dh De socs socn Vfg
