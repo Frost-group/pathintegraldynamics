@@ -13,7 +13,7 @@ function Y6UpconversionDimerHamiltonian(socs::Float64, socn::Float64, Vcte::Floa
 
     # D1 dimer dynamics - FE vs CT character over time.
     
-    reorg = [157.0, 157.0, 240.0, 240.0, 157.0]*mev2au
+    reorg = [157.0, 157.0, 240.0, 240.0, 157.0, 157.0]*mev2au
 
     cutoff = repeat([1600 * invcm2au], 5)
 
@@ -114,7 +114,8 @@ function Y6UpconversionDimerSink(socs::Float64, socn::Float64, Vcte::Float64, Vc
     Egs = 0.0 # Energy of sink state
     
     Vfg = 100.0 # Strongly couples??
-
+    Vcg = 100.0
+    Vtg = 100.0
 
     H0 = Matrix{ComplexF64}([
         Efe1 V Dh De socs socn Vfg
@@ -123,9 +124,67 @@ function Y6UpconversionDimerSink(socs::Float64, socn::Float64, Vcte::Float64, Vc
         De Dh 0.0 Ec Vcte Vcth Vfg
         socs socn Vcth Vcte Et1 Vt Vfg
         socn socs Vcte Vcth Vt Et2 Vfg
-        Vfg Vfg Vfg Vfg Vfg Vfg Egs
+        Vfg Vfg Vcg Vcg Vtg Vtg Egs
     ]) * mev2au 
 
 
     return reorg, cutoff, H0
 end
+
+function Y6UpconversionTrimerHamiltonian()
+    
+    # D1, D3, D8 trimer dynamics - FE vs CT character over time.
+
+    λ = [repeat([157*mev2au], 3)..., repeat([240*mev2au], 6)...]
+
+    γ = repeat([1600 * invcm2au], 9)
+
+    Ef1 = 2046.0 # eV
+    Ef3 = 2046.0
+    Ef8 = 2046.0
+
+    Ect(r) = (2.19 -  4.959/(r))*1000  # Enter r in angstrom ; best fit equation for Ect
+   
+    r1 = 9.29
+    r3 = 13.84
+    r8 = 15.97
+    Dh1 = 55.7
+    Dh3 = -27.3
+    Dh8 = 0.0
+    De1 = 72.0
+    De3 = -15.0
+    De8 = 0.0
+   
+    V1 = -76.0
+    V3 = -6.1
+    V8 = -9.0
+   
+    Ec1 = Ect(r1) # 1656.2 eV
+    Ec3 = Ect(r3) # 1831.69 eV
+    Ec8 = Ect(r8) # 1879.48 eV
+   
+    te1 = 66.1
+    te3 = -27.0
+    te8 = 0.0
+    th1 = 49.6
+    th3 = -11.3
+    th8 = 0.0
+
+    
+    H0 = Matrix{ComplexF64}([
+         Ef1 V1 V8 Dh1 Dh8 De1 0.0 De8 0.0
+         V1 Ef3 V3 De1 0.0 Dh1 Dh3 0.0 De3
+         V8 V3 Ef8 0.0 De8 0.0 De3 Dh8 Dh3
+         Dh1 De1 0.0 Ec1 th3 0.0 0.0 0.0 te8
+         Dh8 0.0 De8 th3 Ec8 0.0 te1 0.0 0.0  
+         De1 Dh1 0.0 0.0 0.0 Ec1 th8 te3 0.0
+         0.0 Dh3 De3 0.0 te1 th8 Ec3 0.0 0.0
+         De8 0.0 Dh8 0.0 0.0 te3 0.0 Ec8 th1
+         0.0 De3 Dh3 te8 0.0 0.0 0.0 th1 Ec3
+        ])
+    
+    return λ, γ, H0
+
+end
+
+

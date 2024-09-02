@@ -42,21 +42,21 @@ function UpconversionPlotDimer(fname)
     ρCT1 = dlm[:, 4]
     ρCT2 = dlm[:, 5]
     ρTT1 = dlm[:, 6]
-    #ρTT2 = dlm[:, 7]
+    ρTT2 = dlm[:, 7]
     #plot!(t[2:nsteps], ρTT[2:nsteps], label="TT")
     #plot!(t[2:nsteps], ρXT1[2:nsteps]+ρXT2[2:nsteps], label="XT")
     #plot!(t[2:nsteps], ρCT1[2:nsteps]+ρCT2[2:nsteps], label="CT")
     
     @gp "set key left"
-    @gp :- "set title 'Y6 Dimer Marcus'" #(Free Parameters - Vct = $V meV, SoC = $s meV)'"
+    @gp :- "set title 'Y6 Dimer HEOM'" #(Free Parameters - Vct = $V meV, SoC = $s meV)'"
     @gp :- "set xlabel 't(fs)'"
     @gp :- "set ylabel 'Population'"
    
 #    @gp :- "set yrange[-0.1:1.0]"
-    @gp :- "set xrange[0:100]"
+    #@gp :- "set xrange[0:100]"
 
     @gp :- t[2:nsteps] ρTT1[2:nsteps] "w l tit 'TT1' dt 1 lw 2 lc rgb 'red' "
-   # @gp :- t[2:nsteps] ρTT2[2:nsteps] "w l tit 'TT2' dt 1 lw 2 lc rgb 'red' "
+    @gp :- t[2:nsteps] ρTT2[2:nsteps] "w l tit 'TT2' dt 1 lw 2 lc rgb 'pink' "
     @gp :- t[2:nsteps] ρXT1[2:nsteps] "w l tit 'XT1' dt 1 lw 2 lc rgb 'cyan' "
     @gp :- t[2:nsteps] ρXT2[2:nsteps] "w l tit 'XT2' dt 1 lw 2 lc rgb 'blue' "
     @gp :- t[2:nsteps] ρCT1[2:nsteps] "w l tit 'CT1' dt 1 lw 2 lc rgb '#74C476' "
@@ -69,7 +69,7 @@ function UpconversionPlotDimer(fname)
     @gp :- "plot $bXT1 w p notitle lc rgb 'cyan' pointtype 0"
     @gp :- "plot $bXT2 w p notitle lc rgb 'blue' pointtype 0"
 =#
-    Gnuplot.save("Results/Y6-Ratematrix-Populations.png", term="pngcairo size 550,350 fontscale 0.8")
+    Gnuplot.save("Results/Y6-heom-populations.png", term="pngcairo size 550,350 fontscale 0.8")
 
     #savefig("Dimer-TTM-Populations.png")
 end
@@ -188,12 +188,10 @@ end
 #end
 
 
-UpconversionPlotDimer("upconversion-ratematrix-populations.stdout")
+UpconversionPlotDimer("upconversion-dimer-populations-heom.stdout")
 
 #UpconversionYieldDimer()
 # Used 0.5nm arbitrarily here, need to figure out site distances for real materials
 #plot1DHolstein("Results/Ordejon-Rubrene/ordejon1D-populations.stdout", 0.5)
-#UpconversionPlotDimer("Results/upconversion-populations-ttm.stdout")
-#UpconversionPlotTrimer("Results/upconversion-populations-brme.stdout")
 
 
