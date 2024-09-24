@@ -6,8 +6,55 @@ const mev2au = mev2invcm * invcm2au
 const nm2au = 18.897
 
 
+Ect(r) = (2.19 -  4.959/(r))*1000  # Enter r in Angstrom ; this is the stupid best-fit equation for energies of the CT states in Samuele's paper.
 
-function Y6UpconversionDimerHamiltonian(socs::Float64, socn::Float64, Vcte::Float64, Vcth::Float64)
+struct Y6Dimer
+    r :: Float64
+    H0 :: Matrix{ComplexF64}
+    reorg :: Vector{ComplexF64}
+    cutoffs :: Vector{ComplexF64}
+end
+
+function Y6Dimer(r::Float64, V::Float64, De::Float64, Dh::Float64)
+    Ec = Ect(r)
+
+    # Zhenghan singlet values
+    Efe1 = 1872.0
+    Efe2 = 1886.0
+
+    # Zhenghan triplet values
+    Et1 = 1350.0
+    Et2 = 1393.0
+
+    # Best-guess triplet couplings
+
+    Vt = -76.0 # Triplet-Triplet coupling, assumed to be same as singlet-singlet for now
+
+    Vcte = 15.0 # CT-Triplet coupling (same site)
+    Vcth = 15.0 # CT-Triplet coupling (different site)
+    socs = 10.0  # Singlet-triplet coupling (same site)
+    socn = 10.0  # Singlet-triplet coupling (different site)
+    
+    
+    H0 = Matrix{ComplexF64}([
+        Efe1 V Dh De socs socn 
+        V Efe1 De Dh socn socs 
+        Dh De Ec 0.0 Vcth Vcte 
+        De Dh 0.0 Ec Vcte Vcth
+        socs socn Vcth Vcte Et1 Vt
+        socn socs Vcte Vcth Vt Et2
+    ]) * mev2au 
+
+    reorg = [157.0, 157.0, 240.0, 240.0, 157.0, 157.0]*mev2au
+    cutoff = repeat([1600 * invcm2au], 6)
+    
+    Y6Dimer(r, H0, reorgs, cutoffs)
+end
+
+
+
+
+function Y6UpconversionD1(socs::Float64, socn::Float64, Vcte::Float64, Vcth::Float64)
     
     # Params from Samuele paper
 
@@ -18,11 +65,11 @@ function Y6UpconversionDimerHamiltonian(socs::Float64, socn::Float64, Vcte::Floa
     cutoff = repeat([1600 * invcm2au], 5)
 
     #Efe = 2046.0
-    Ect(r) = (2.19 -  4.959/(r))*1000  # Enter r in angstrom ; best fit equation for Ect
+
     Dh = 55.7
     De = 72.0
     V = -76.0
-    
+
     Vt = -76.0 # Triplet-Triplet coupling, assumed to be same as singlet-singlet for now
    
     Ec = Ect(9.29)
@@ -60,7 +107,6 @@ function Y6UpconversionDimerHamiltonian(socs::Float64, socn::Float64, Vcte::Floa
         socs socn Vcth Vcte Et1 Vt
         socn socs Vcte Vcth Vt Et2
     ]) * mev2au 
-
 
     return reorg, cutoff, H0
 end

@@ -1,5 +1,6 @@
 using Gnuplot
-
+using DelimitedFiles
+#include("long-ratematrix.jl")
 include("ratematrix-solver.jl")
 include("hamiltonian-models.jl")
 
@@ -12,7 +13,14 @@ function UpconvertRateMatrix()
     ts, ps = propagate(N, H0, λs, β, 4000, 0.25/au2fs)
     
     ts = ts.*au2fs
-    
+
+    open("upconversion-marcus-populations.stdout", "w") do io
+       pops = [real.(ps[:, i]) for i in 1:N]
+       tpops = [ts pops...]
+       writedlm(io, tpops, ' ')
+   end    
+
+
     println(size(ts))
     println(size(ps[:, 1]))
     #println(ps)
@@ -35,4 +43,4 @@ function UpconvertRateMatrix()
 end
 
 
-UpconvertRateMatrix()
+

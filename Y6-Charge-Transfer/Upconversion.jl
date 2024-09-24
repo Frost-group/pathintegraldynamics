@@ -7,7 +7,7 @@ using OrdinaryDiffEq
 
 
 include("hamiltonian-models.jl")
-include("ratematrix-solver.jl")
+include("upconversion-ratematrix.jl")
 
 const thz2au = 0.0001519828500716
 const invcm2au = 4.55633e-6
@@ -17,30 +17,7 @@ const mev2au = mev2invcm * invcm2au
 const nm2au = 18.897
 
 
-#= For now : use code upconversion-ratematrix.jl
 
-function UpconvertRateMatrix()
-    λs, γ, H0 = Y6UpconversionDimerHamiltonianWTriplet(162.0, 71.0)
-
-    N = 5
-
-    β = 1052.0 # 300K
-    ts, ps = propagate(N, H0, λs, β, 4000, 0.25/au2fs)
-    
-    ts = ts.*au2fs
-    
-   # println(size(ts))
-    #println(size(ps[:, 1]))
-    #println(ps)
-    #println(ts)
-
-    open("upconversion-ratematrix-populations.stdout", "w") do io
-       pops = [real.(ps[:, i]) for i in 1:N]
-       tpops = [ts pops...]
-       writedlm(io, tpops, ' ')
-   end
-end
-=#
 
 function Boltzmann()
     
@@ -121,13 +98,15 @@ UpconversionRedfield
 """
 
 
-function UpconversionRedfield(s, V; dt=0.25/au2fs, nsteps=4000)
+function UpconversionRedfield(r, V, De, Dh, i; dt=0.25/au2fs, nsteps=4000)
    
     #λs, γs, H0 = Y6UpconversionDimerHamiltonian(s, s, V, V)
+
+    dimer = Y6Dimer(r, V, De, Dh)
+    H0 = dimer.H0
+    λs = dimer.reorgs
+    γs = dimer.cutoffs
     
-    λs, γs, H0 = Y6UpconversionDimerSink(s, s, V, V)
-
-
     N = length(λs)
 
 
@@ -171,7 +150,7 @@ function UpconversionRedfield(s, V; dt=0.25/au2fs, nsteps=4000)
                                    )
 
    # open("stdout-files4/upconversion-populations-brme-s-$s-V-$V-t-$E.stdout", "w") do io
-   open("upconversion-redfield-dimer-with-sink.stdout", "w") do io
+   open("upconversion-redfield-dimer-$i.stdout", "w") do io
        pops = [real.(ρs[:, i, i]) for i in 1:N]
        tpops = [times_BRME pops...]
        writedlm(io, tpops, ' ')
@@ -242,10 +221,17 @@ function UpconversionTTM(; dt=0.25/au2fs, nsteps=4000, rmax=15)
 end
 
 
-#UpconvertRateMatrix()
+# Samuele parameters for all 10 dimers
 
-UpconversionRedfield(71.0, 162.0)
+r = []
+V = []
+Dh = []
+De = []
 
-#UpconversionHEOM(71.0, 162.0)
+for i in 1:10
+    UpconvertRateMatrix(r[i], V[i], De[i], Dh[i], i)
+    UpconversionRedfield(r[i], V[i], De[i], Dh[i], i)
+    UpconversionHEOM(r[i], V[i], De[i], Dh[i], i)
+end
 
 
