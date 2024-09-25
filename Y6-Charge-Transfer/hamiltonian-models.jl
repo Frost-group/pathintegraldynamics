@@ -11,8 +11,8 @@ Ect(r) = (2.19 -  4.959/(r))*1000  # Enter r in Angstrom ; this is the stupid be
 struct Y6Dimer
     r :: Float64
     H0 :: Matrix{ComplexF64}
-    reorg :: Vector{ComplexF64}
-    cutoffs :: Vector{ComplexF64}
+    reorg :: Vector{Float64}
+    cutoff :: Vector{Float64}
 end
 
 function Y6Dimer(r::Float64, V::Float64, De::Float64, Dh::Float64)
@@ -48,7 +48,7 @@ function Y6Dimer(r::Float64, V::Float64, De::Float64, Dh::Float64)
     reorg = [157.0, 157.0, 240.0, 240.0, 157.0, 157.0]*mev2au
     cutoff = repeat([1600 * invcm2au], 6)
     
-    Y6Dimer(r, H0, reorgs, cutoffs)
+    Y6Dimer(r, H0, reorg, cutoff)
 end
 
 

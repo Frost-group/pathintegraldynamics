@@ -104,8 +104,8 @@ function UpconversionRedfield(r, V, De, Dh, i; dt=0.25/au2fs, nsteps=4000)
 
     dimer = Y6Dimer(r, V, De, Dh)
     H0 = dimer.H0
-    λs = dimer.reorgs
-    γs = dimer.cutoffs
+    λs = dimer.reorg
+    γs = dimer.cutoff
     
     N = length(λs)
 
@@ -223,15 +223,15 @@ end
 
 # Samuele parameters for all 10 dimers
 
-r = []
-V = []
-Dh = []
-De = []
+r = [9.29, 13.62, 13.84, 15.49, 18.15, 18.33, 15.44, 15.97]
+V = [-76.0, 5.1, -6.1, -78.7, 50.8, 56.5, -11.5, -9.0]
+De = [72.0, -55.4, -15.0, 53.1, -68.9, -47.9, 0.0, 0.0]
+Dh = [55.7, -45.5, -27.3, -10.9, 24.3, 33.5, 0.0, 0.0]
 
-for i in 1:10
-    UpconvertRateMatrix(r[i], V[i], De[i], Dh[i], i)
+for i in 1:8
+#    UpconvertRateMatrix(r[i], V[i], De[i], Dh[i], i)
     UpconversionRedfield(r[i], V[i], De[i], Dh[i], i)
-    UpconversionHEOM(r[i], V[i], De[i], Dh[i], i)
+#   UpconversionHEOM(r[i], V[i], De[i], Dh[i], i)
 end
 
 
