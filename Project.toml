@@ -1,0 +1,7 @@
+[deps]
+DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+Gnuplot = "dc211083-a33a-5b79-959f-2ff34033469d"
+HierarchicalEOM = "a62dbcb7-80f5-4d31-9a88-8b19fd92b128"
+OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
+ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
+QuantumDynamics = "5a40c529-53c2-4483-a223-e00c1cee8134"
