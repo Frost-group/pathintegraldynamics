@@ -1,5 +1,5 @@
 using LinearAlgebra
-using DifferentialEquations
+using OrdinaryDiffEq
 import HierarchicalEOM: Boson_DrudeLorentz_Matsubara, Boson_Underdamped_Matsubara, M_Boson, HEOMsolve, BosonBath, Qobj, ket2dm, basis, getRho, getADO, addTerminator
 
 # As from Lucy; should be cross-checked and linked back to NIST
@@ -50,7 +50,7 @@ end
 
 
 
-function RunHEOM(dimer, tier)
+function RunHEOM(dimer, tier; t=1000e-15)
     Nkeep = 5 #How many states to keep from the Hamiltonian 
     InputHam = invcm_to_natural * GetHam(dimer)
     InputHam = InputHam[1:Nkeep, 1:Nkeep]
@@ -108,11 +108,19 @@ function RunHEOM(dimer, tier)
     end
 
     #Time list; in seconds
-    tlist = 0:0.25e-15:1e-15
+    # Nb, if adaptive, these are just the evaluation points of the ODE
+    tlist = 0:t/10000:t
 
     # WORK DONE HERE
-    sol = HEOMsolve(L, rho0, tlist; e_ops=state_operators, alg=ROCK4())
+    #  dtmax set explicitly to stop solver adapative step being TOO big and causing Int overflow
+    sol = HEOMsolve(L, rho0, tlist, dtmax = 1e-13, e_ops=state_operators, alg=ROCK4())
 
+    return sol 
+end
+
+if abspath(PROGRAM_FILE) == @__FILE__
+    @time sol=RunHEOM(2, 2, t=1e-12)
+    
     result = vcat(tlist', real(sol.expect))
     filename = "Y6_D$(dimer)_EigenSolution_0.txt"
     open(filename, "w") do io
@@ -120,9 +128,6 @@ function RunHEOM(dimer, tier)
             println(io, result[i, :])
         end
     end
-end
 
-if abspath(PROGRAM_FILE) == @__FILE__
-    @time RunHEOM(2, 2) # just a quick test; assumes only running for 1fs
 end
 
