@@ -1,6 +1,7 @@
 using LinearAlgebra
-using OrdinaryDiffEq
 import HierarchicalEOM: Boson_DrudeLorentz_Matsubara, Boson_Underdamped_Matsubara, M_Boson, HEOMsolve, BosonBath, Qobj, ket2dm, basis, getRho, getADO, addTerminator
+using OrdinaryDiffEq
+import Static
 
 # As from Lucy; should be cross-checked and linked back to NIST
 const hbar = 6.62607015e-34 / (2 * pi)
@@ -111,9 +112,12 @@ function RunHEOM(dimer, tier; t=1000e-15)
     # Nb, if adaptive, these are just the evaluation points of the ODE
     tlist = 0:t/10000:t
 
+    println("Starting HEOMsolve... ")
     # WORK DONE HERE
     #  dtmax set explicitly to stop solver adapative step being TOO big and causing Int overflow
-    sol = HEOMsolve(L, rho0, tlist, dtmax = 1e-13, e_ops=state_operators, alg=ROCK4())
+    sol = HEOMsolve(L, rho0, tlist, dtmax = 1e-13, e_ops=state_operators, 
+    alg=Tsit5(thread = Static.True()), 
+    progress_bar=true)
 
     return sol 
 end
