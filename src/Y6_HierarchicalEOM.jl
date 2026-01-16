@@ -110,6 +110,7 @@ function RunHEOM(dimer, tier)
     #Time list; in seconds
     tlist = 0:0.25e-15:1e-15
 
+    # WORK DONE HERE
     sol = HEOMsolve(L, rho0, tlist; e_ops=state_operators, alg=ROCK4())
 
     result = vcat(tlist', real(sol.expect))
@@ -119,27 +120,9 @@ function RunHEOM(dimer, tier)
             println(io, result[i, :])
         end
     end
-
-    #run loop 
-    for i = 1:10
-        local tlist = 0:1e-15:1e-10
-        if i == 1
-            global solloop = HEOMsolve(L, sol.ados[1], tlist; e_ops=state_operators, alg=Tsit5(), maxiters=1e6)
-        else
-            global solloop = HEOMsolve(L, solloop.ados[1], tlist; e_ops=state_operators, alg=Tsit5(), maxiters=1e6)
-        end
-
-        local result = vcat(tlist', real(solloop.expect))
-        local filename = "Y6_D$(dimer)_EigenSolution_$(i).txt"
-        open(filename, "w") do io
-            for i in 1:size(result, 1)
-                println(io, result[i, :])
-            end
-        end
-    end
-
 end
 
 if abspath(PROGRAM_FILE) == @__FILE__
     @time RunHEOM(2, 2) # just a quick test; assumes only running for 1fs
 end
+
